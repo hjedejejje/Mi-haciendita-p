@@ -1,0 +1,2534 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Haciendita | Bitácora Ganadera Bovina</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js para curvas de crecimiento -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        emeraldDeep: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                            950: '#022c22',
+                        },
+                        goldWarm: {
+                            100: '#fef3c7',
+                            300: '#fcd34d',
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                            700: '#b45309',
+                        },
+                        creamWarm: '#fffbeb',
+                        charcoal: '#1f2937'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #fffbeb;
+            color: #1f2937;
+        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #fef3c7; }
+        ::-webkit-scrollbar-thumb { background: #d97706; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #b45309; }
+        .card-shadow {
+            box-shadow: 0 6px 24px -4px rgba(6, 78, 59, 0.10);
+        }
+        .modal-backdrop {
+            background-color: rgba(2, 44, 34, 0.72);
+            backdrop-filter: blur(5px);
+        }
+        .hero-pattern {
+            background-color: #064e3b;
+            background-image: radial-gradient(rgba(245, 158, 11, 0.16) 1.5px, transparent 1.5px);
+            background-size: 24px 24px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans antialiased">
+
+    <!-- Notificación Toast Flotante -->
+    <div id="toast" class="fixed bottom-5 right-5 z-[70] transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="bg-emeraldDeep-900 text-white px-5 py-3.5 rounded-2xl shadow-2xl border-2 border-goldWarm-400 flex items-center gap-3">
+            <i id="toast-icon" class="fa-solid fa-circle-check text-goldWarm-400 text-lg"></i>
+            <span id="toast-message" class="font-semibold text-sm">Operación realizada</span>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- PANTALLA 0: BIENVENIDA / LANDING Y ACCESO ("MI HACIENDITA")           -->
+    <!-- ===================================================================== -->
+    <section id="welcome-screen" class="min-h-screen hero-pattern text-white flex flex-col justify-between p-4 sm:p-8">
+        <!-- Barra superior bienvenida -->
+        <div class="max-w-6xl w-full mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-goldWarm-400 to-goldWarm-600 text-emeraldDeep-950 flex items-center justify-center shadow-lg">
+                    <i class="fa-solid fa-cow text-2xl"></i>
+                </div>
+                <div>
+                    <span class="font-display font-extrabold text-xl sm:text-2xl tracking-tight text-white block leading-none">Mi Haciendita</span>
+                    <span class="text-xs text-goldWarm-300 font-semibold tracking-wider uppercase">Bitácora Ganadera Bovina</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="openAuthModal('login')" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-bold border border-white/20 transition">
+                    <i class="fa-solid fa-right-to-bracket mr-1.5 text-goldWarm-400"></i>Iniciar Sesión
+                </button>
+            </div>
+        </div>
+
+        <!-- Centro Hero -->
+        <div class="max-w-6xl w-full mx-auto my-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div class="lg:col-span-7 space-y-6">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-goldWarm-500/20 border border-goldWarm-400/40 text-goldWarm-300 text-xs font-bold uppercase tracking-wider">
+                    <i class="fa-solid fa-sparkles"></i> Control Total del Hato • Sincronizado en la Nube
+                </div>
+                <h1 class="font-display font-extrabold text-3xl sm:text-5xl lg:text-6xl leading-tight text-white">
+                    Bienvenido a <span class="text-transparent bg-clip-text bg-gradient-to-r from-goldWarm-300 via-goldWarm-400 to-amber-500">Mi Haciendita</span>
+                </h1>
+                <p class="text-emerald-100 text-base sm:text-lg max-w-2xl leading-relaxed">
+                    Lleva el registro profesional de tu ganadería bovina desde cualquier lugar: control de pesos de entrada y evolución, vacunas, vitaminas, desparasitantes, identificación con arete, ganado vendido y colaboración en tiempo real con tu encargado.
+                </p>
+
+                <!-- Botones Principales de Acción -->
+                <div class="flex flex-col sm:flex-row gap-3.5 pt-2">
+                    <button onclick="enterAppDirectly()" class="bg-gradient-to-r from-goldWarm-400 to-goldWarm-600 hover:from-goldWarm-500 hover:to-goldWarm-700 text-emeraldDeep-950 font-display font-extrabold px-7 py-4 rounded-2xl text-base shadow-xl shadow-black/30 flex items-center justify-center gap-2.5 transition transform hover:-translate-y-0.5">
+                        <i class="fa-solid fa-door-open text-lg"></i> Entrar a Mi Haciendita
+                    </button>
+                    <button onclick="openAuthModal('register')" class="bg-emeraldDeep-800 hover:bg-emeraldDeep-700 text-white font-bold px-6 py-4 rounded-2xl text-base border-2 border-goldWarm-400/50 flex items-center justify-center gap-2 transition">
+                        <i class="fa-solid fa-user-plus text-goldWarm-400"></i> Crear Cuenta / Vincular Hato
+                    </button>
+                </div>
+
+                <!-- Destacados rápidos -->
+                <div class="grid grid-cols-3 gap-3 pt-4 border-t border-emerald-700/60 max-w-xl">
+                    <div>
+                        <span class="text-goldWarm-400 font-display font-extrabold text-xl sm:text-2xl block">2 Dispositivos</span>
+                        <span class="text-xs text-emerald-200">Control seguro por cuenta</span>
+                    </div>
+                    <div>
+                        <span class="text-goldWarm-400 font-display font-extrabold text-xl sm:text-2xl block">En Vivo</span>
+                        <span class="text-xs text-emerald-200">Sincroniza con tu encargado</span>
+                    </div>
+                    <div>
+                        <span class="text-goldWarm-400 font-display font-extrabold text-xl sm:text-2xl block">100% Móvil</span>
+                        <span class="text-xs text-emerald-200">Pesaje, sanidad y ventas</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tarjeta Visual Ilustrativa -->
+            <div class="lg:col-span-5">
+                <div class="bg-white/10 backdrop-blur-md border border-goldWarm-400/30 rounded-3xl p-6 shadow-2xl space-y-4">
+                    <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                        <div class="flex items-center gap-3">
+                            <span class="w-10 h-10 rounded-xl bg-goldWarm-400 text-emeraldDeep-950 flex items-center justify-center text-xl">🐄</span>
+                            <div>
+                                <h3 class="font-display font-bold text-white text-sm">Ficha Ganadera Inteligente</h3>
+                                <p class="text-xs text-emerald-200">Control completo por cada cabeza</p>
+                            </div>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-full bg-emerald-500/30 text-emerald-200 text-xs font-bold">Activo</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 text-left">
+                        <div class="bg-emeraldDeep-950/60 p-3.5 rounded-2xl border border-white/10">
+                            <i class="fa-solid fa-weight-scale text-goldWarm-400 text-lg mb-1"></i>
+                            <p class="text-xs text-emerald-200">Curva de Peso</p>
+                            <p class="font-display font-bold text-white text-sm">Ganancia diaria (GDP)</p>
+                        </div>
+                        <div class="bg-emeraldDeep-950/60 p-3.5 rounded-2xl border border-white/10">
+                            <i class="fa-solid fa-syringe text-goldWarm-400 text-lg mb-1"></i>
+                            <p class="text-xs text-emerald-200">Plan Sanitario</p>
+                            <p class="font-display font-bold text-white text-sm">Vacunas y Vitaminas</p>
+                        </div>
+                        <div class="bg-emeraldDeep-950/60 p-3.5 rounded-2xl border border-white/10">
+                            <i class="fa-solid fa-handshake text-goldWarm-400 text-lg mb-1"></i>
+                            <p class="text-xs text-emerald-200">Control de Ventas</p>
+                            <p class="font-display font-bold text-white text-sm">Historial de Vendidos</p>
+                        </div>
+                        <div class="bg-emeraldDeep-950/60 p-3.5 rounded-2xl border border-white/10">
+                            <i class="fa-solid fa-users-gear text-goldWarm-400 text-lg mb-1"></i>
+                            <p class="text-xs text-emerald-200">Modo Colaborador</p>
+                            <p class="font-display font-bold text-white text-sm">Código de Hato</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-6xl w-full mx-auto text-center text-xs text-emerald-200/80">
+            Mi Haciendita • Bitácora Ganadera Bovina • Diseñada para el campo y tu familia
+        </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- CONTENEDOR PRINCIPAL DE LA APLICACIÓN (OCULTO HASTA ENTRAR)           -->
+    <!-- ===================================================================== -->
+    <div id="main-app-shell" class="hidden flex-col min-h-screen">
+
+        <!-- Barra Superior de Navegación -->
+        <header class="bg-gradient-to-r from-emeraldDeep-900 via-emeraldDeep-800 to-emeraldDeep-900 text-white shadow-xl sticky top-0 z-30 border-b-4 border-goldWarm-500">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between py-3 gap-3">
+                    <!-- Identidad de la App y la Finca -->
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <button onclick="showWelcomeScreen()" title="Volver a pantalla de bienvenida" class="w-11 h-11 rounded-2xl bg-gradient-to-br from-goldWarm-400 to-goldWarm-600 text-emeraldDeep-950 flex items-center justify-center shadow-md hover:scale-105 transition">
+                                <i class="fa-solid fa-cow text-2xl"></i>
+                            </button>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h1 class="font-display font-extrabold text-lg sm:text-xl tracking-tight leading-none text-white">
+                                        Mi Haciendita
+                                    </h1>
+                                    <span class="hidden sm:inline-block px-2 py-0.5 rounded-md bg-goldWarm-500/20 border border-goldWarm-400/40 text-goldWarm-300 text-[10px] font-bold uppercase">
+                                        Bitácora Ganadera
+                                    </span>
+                                </div>
+                                <p id="header-ranch-subtitle" class="text-xs text-emerald-100 mt-0.5 font-medium">
+                                    Hato: <strong class="text-goldWarm-300">Ganadería La Esperanza</strong> • Prop.: <span id="header-owner-name">Familia Ganadera</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Botón rápido móvil -->
+                        <button onclick="openNewAnimalModal()" class="lg:hidden bg-gradient-to-r from-goldWarm-400 to-goldWarm-500 text-emeraldDeep-950 font-extrabold px-3.5 py-2 rounded-xl text-xs shadow flex items-center gap-1.5">
+                            <i class="fa-solid fa-plus"></i> Animal
+                        </button>
+                    </div>
+
+                    <!-- Navegación Principal -->
+                    <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                        <nav class="flex flex-wrap bg-emeraldDeep-950/70 p-1 rounded-xl border border-emeraldDeep-700 gap-1">
+                            <button onclick="switchMainTab('inicio')" id="nav-inicio" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-goldWarm-400 text-emeraldDeep-950 shadow transition">
+                                <i class="fa-solid fa-house mr-1"></i>Inicio
+                            </button>
+                            <button onclick="switchMainTab('hato')" id="nav-hato" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-emerald-100 hover:text-white transition">
+                                <i class="fa-solid fa-cow mr-1"></i>Hato Activo
+                            </button>
+                            <button onclick="switchMainTab('vendidos')" id="nav-vendidos" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-emerald-100 hover:text-white transition">
+                                <i class="fa-solid fa-handshake mr-1"></i>Vendidos <span id="badge-sold-count" class="ml-1 px-1.5 py-0.2 bg-amber-600/80 text-white rounded-full text-[10px]">0</span>
+                            </button>
+                            <button onclick="switchMainTab('bitacora')" id="nav-bitacora" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-emerald-100 hover:text-white transition">
+                                <i class="fa-solid fa-clock-rotate-left mr-1"></i>Bitácora
+                            </button>
+                            <button onclick="switchMainTab('finca')" id="nav-finca" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-emerald-100 hover:text-white transition">
+                                <i class="fa-solid fa-sliders mr-1"></i>Finca y Equipo
+                            </button>
+                        </nav>
+
+                        <!-- Estado de Cuenta / Usuario -->
+                        <button onclick="openAuthModal('status')" id="user-pill-btn" class="px-3 py-1.5 rounded-xl bg-emeraldDeep-950/80 hover:bg-emeraldDeep-700 border border-goldWarm-400/40 text-xs font-bold text-goldWarm-300 flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-cloud text-emerald-400"></i>
+                            <span id="user-pill-text">Modo Local</span>
+                        </button>
+
+                        <!-- Botón Nuevo Animal Desktop -->
+                        <button onclick="openNewAnimalModal()" class="hidden lg:flex bg-gradient-to-r from-goldWarm-400 to-goldWarm-500 hover:from-goldWarm-500 hover:to-goldWarm-600 text-emeraldDeep-950 font-extrabold px-4 py-2 rounded-xl text-sm shadow-md items-center gap-2 transition transform active:scale-95">
+                            <i class="fa-solid fa-plus"></i> Nuevo Animal
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Contenido Principal -->
+        <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+            <!-- =============================================================== -->
+            <!-- VISTA 1: PANEL DE INICIO (DASHBOARD DEL HATO)                   -->
+            <!-- =============================================================== -->
+            <div id="view-inicio" class="space-y-6">
+                <!-- Banner de Identidad de la Ganadería -->
+                <div class="bg-gradient-to-r from-emeraldDeep-800 via-emeraldDeep-700 to-amber-700 rounded-3xl p-6 sm:p-7 text-white shadow-xl border-2 border-goldWarm-400/40 flex flex-col md:flex-row md:items-center justify-between gap-5">
+                    <div class="space-y-1.5">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/25 text-goldWarm-300 text-xs font-bold">
+                            <i class="fa-solid fa-location-dot"></i> <span id="dash-ranch-location">Finca Familiar</span>
+                        </div>
+                        <h2 id="dash-ranch-name" class="font-display font-extrabold text-2xl sm:text-3xl text-white">
+                            Ganadería La Esperanza
+                        </h2>
+                        <p class="text-sm text-emerald-100">
+                            Propietario: <strong id="dash-owner-name" class="text-goldWarm-300">Familia Ganadera</strong> • Control integral de bovinos, pesajes y sanidad.
+                        </p>
+                    </div>
+                    <div class="flex flex-wrap gap-2.5">
+                        <button onclick="openNewAnimalModal()" class="bg-goldWarm-400 hover:bg-goldWarm-500 text-emeraldDeep-950 font-extrabold px-4 py-2.5 rounded-xl text-sm shadow-md flex items-center gap-2 transition">
+                            <i class="fa-solid fa-plus"></i> Registrar Bovino
+                        </button>
+                        <button onclick="switchMainTab('finca')" class="bg-white/15 hover:bg-white/25 text-white font-bold px-4 py-2.5 rounded-xl text-sm border border-white/25 flex items-center gap-2 transition">
+                            <i class="fa-solid fa-pen"></i> Editar Datos Finca
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tarjetas de Resumen Estadístico (KPIs) -->
+                <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <!-- Ganado Activo -->
+                    <div onclick="switchMainTab('hato')" class="cursor-pointer bg-white rounded-2xl p-5 card-shadow border-b-4 border-emeraldDeep-600 hover:-translate-y-0.5 transition flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wider text-gray-500">Ganado Activo</p>
+                            <h3 id="stat-total" class="text-3xl font-display font-extrabold text-emeraldDeep-800 mt-1">0</h3>
+                            <p id="stat-genetics" class="text-[11px] text-gray-500 mt-1 font-medium">0 Puros • 0 Criollos</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-emeraldDeep-50 text-emeraldDeep-700 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-cow"></i>
+                        </div>
+                    </div>
+
+                    <!-- Ganado Vendido -->
+                    <div onclick="switchMainTab('vendidos')" class="cursor-pointer bg-white rounded-2xl p-5 card-shadow border-b-4 border-amber-600 hover:-translate-y-0.5 transition flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wider text-gray-500">Ganado Vendido</p>
+                            <h3 id="stat-sold" class="text-3xl font-display font-extrabold text-amber-700 mt-1">0</h3>
+                            <p class="text-[11px] text-amber-700/80 mt-1 font-medium">Historial conservado</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-handshake"></i>
+                        </div>
+                    </div>
+
+                    <!-- Peso Promedio -->
+                    <div class="bg-white rounded-2xl p-5 card-shadow border-b-4 border-goldWarm-500 flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wider text-gray-500">Peso Promedio</p>
+                            <h3 id="stat-avg-weight" class="text-2xl sm:text-3xl font-display font-extrabold text-charcoal mt-1">0 <span class="text-sm font-semibold text-gray-400">kg</span></h3>
+                            <p id="stat-total-weight" class="text-[11px] text-emerald-700 font-semibold mt-1">Total: 0 kg</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-goldWarm-100 text-goldWarm-700 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-weight-scale"></i>
+                        </div>
+                    </div>
+
+                    <!-- Control de Arete -->
+                    <div class="bg-white rounded-2xl p-5 card-shadow border-b-4 border-sky-600 flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wider text-gray-500">Con / Sin Arete</p>
+                            <div class="flex items-baseline gap-2 mt-1">
+                                <h3 id="stat-ear-yes" class="text-3xl font-display font-extrabold text-sky-800">0</h3>
+                                <span class="text-xs font-semibold text-gray-500">areteados</span>
+                            </div>
+                            <p id="stat-ear-no" class="text-[11px] text-amber-700 font-semibold mt-1">0 sin arete</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-sky-50 text-sky-700 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-tag"></i>
+                        </div>
+                    </div>
+
+                    <!-- Alertas Sanitarias -->
+                    <div class="bg-white rounded-2xl p-5 card-shadow border-b-4 border-rose-600 flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wider text-gray-500">Alertas Sanidad</p>
+                            <h3 id="stat-alerts" class="text-3xl font-display font-extrabold text-rose-700 mt-1">0</h3>
+                            <p class="text-[11px] text-gray-500 mt-1">Refuerzos próximos</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-syringe"></i>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Accesos Rápidos y Resumen Reciente -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <!-- Columna Izquierda: Últimos Movimientos y Alertas -->
+                    <div class="lg:col-span-7 bg-white rounded-2xl p-6 card-shadow border border-goldWarm-300/40 space-y-4">
+                        <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+                            <h3 class="font-display font-bold text-lg text-emeraldDeep-900 flex items-center gap-2">
+                                <i class="fa-solid fa-clock-rotate-left text-goldWarm-600"></i> Actividad Reciente en la Haciendita
+                            </h3>
+                            <button onclick="switchMainTab('bitacora')" class="text-xs font-bold text-emeraldDeep-700 hover:underline">
+                                Ver toda la bitácora →
+                            </button>
+                        </div>
+                        <div id="dashboard-recent-list" class="divide-y divide-gray-100">
+                            <!-- Dinámico -->
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Accesos Directos y Sincronización -->
+                    <div class="lg:col-span-5 space-y-4">
+                        <div class="bg-white rounded-2xl p-6 card-shadow border border-goldWarm-300/40 space-y-3">
+                            <h3 class="font-display font-bold text-lg text-emeraldDeep-900">Accesos Directos</h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                <button onclick="switchMainTab('hato')" class="p-3.5 rounded-2xl bg-emeraldDeep-50 hover:bg-emeraldDeep-100 text-emeraldDeep-900 text-left transition border border-emeraldDeep-600/15">
+                                    <i class="fa-solid fa-list-check text-emeraldDeep-700 text-lg mb-1.5 block"></i>
+                                    <span class="font-bold text-sm block">Inventario Activo</span>
+                                    <span class="text-[11px] text-gray-600">Ver todos los bovinos</span>
+                                </button>
+                                <button onclick="switchMainTab('vendidos')" class="p-3.5 rounded-2xl bg-amber-50 hover:bg-amber-100 text-amber-900 text-left transition border border-amber-500/20">
+                                    <i class="fa-solid fa-handshake text-amber-700 text-lg mb-1.5 block"></i>
+                                    <span class="font-bold text-sm block">Ganado Vendido</span>
+                                    <span class="text-[11px] text-gray-600">Consultar ventas</span>
+                                </button>
+                                <button onclick="switchMainTab('finca')" class="p-3.5 rounded-2xl bg-sky-50 hover:bg-sky-100 text-sky-900 text-left transition border border-sky-500/20">
+                                    <i class="fa-solid fa-users text-sky-700 text-lg mb-1.5 block"></i>
+                                    <span class="font-bold text-sm block">Vincular Encargado</span>
+                                    <span class="text-[11px] text-gray-600">Compartir control</span>
+                                </button>
+                                <button onclick="exportToCSV()" class="p-3.5 rounded-2xl bg-purple-50 hover:bg-purple-100 text-purple-900 text-left transition border border-purple-500/20">
+                                    <i class="fa-solid fa-file-excel text-purple-700 text-lg mb-1.5 block"></i>
+                                    <span class="font-bold text-sm block">Exportar Excel</span>
+                                    <span class="text-[11px] text-gray-600">Descargar reporte CSV</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Tarjeta de Seguridad de 2 Dispositivos -->
+                        <div class="bg-emeraldDeep-900 text-white rounded-2xl p-5 shadow-lg border border-goldWarm-400/40 space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold uppercase tracking-wider text-goldWarm-400">
+                                    <i class="fa-solid fa-shield-halved mr-1"></i> Seguridad de Acceso
+                                </span>
+                                <span id="dash-device-badge" class="text-[11px] bg-emeraldDeep-700 px-2.5 py-0.5 rounded-full font-semibold">
+                                    Máx. 2 dispositivos
+                                </span>
+                            </div>
+                            <p class="text-xs text-emerald-100 leading-relaxed">
+                                Inicia sesión con tu correo para sincronizar en la nube y vincular hasta <strong>2 dispositivos</strong> por usuario o compartir el código de tu hato con tu colaborador.
+                            </p>
+                            <button onclick="openAuthModal('login')" class="w-full mt-1 bg-goldWarm-400 hover:bg-goldWarm-500 text-emeraldDeep-950 font-bold py-2 rounded-xl text-xs transition">
+                                Gestionar Cuenta y Dispositivos
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- =============================================================== -->
+            <!-- VISTA 2: INVENTARIO DEL HATO ACTIVO                             -->
+            <!-- =============================================================== -->
+            <div id="view-hato" class="hidden space-y-5">
+                <!-- Barra de Herramientas -->
+                <div class="bg-white rounded-2xl p-4 card-shadow border border-goldWarm-300/40 flex flex-col lg:flex-row gap-4 justify-between items-stretch lg:items-center">
+                    <div class="relative flex-grow max-w-md">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" id="search-input" oninput="renderHato()" placeholder="Buscar por nombre, N° arete o raza..." 
+                            class="w-full pl-10 pr-4 py-2.5 bg-creamWarm border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-emeraldDeep-600 focus:ring-2 focus:ring-emeraldDeep-600/20 transition">
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2">
+                        <select id="filter-select" onchange="renderHato()" class="bg-creamWarm border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-charcoal focus:outline-none cursor-pointer">
+                            <option value="all">📋 Todos los activos</option>
+                            <option value="ear-yes">🏷️ Con Arete</option>
+                            <option value="ear-no">⚠️ Sin Arete</option>
+                            <option value="Pura">🏅 Raza Pura</option>
+                            <option value="Criollo">🌿 Criollo</option>
+                            <option value="Cruce">🧬 Cruce / Mestizo</option>
+                        </select>
+
+                        <button onclick="exportToCSV('active')" class="bg-emeraldDeep-50 hover:bg-emeraldDeep-100 text-emeraldDeep-800 border border-emeraldDeep-600/20 font-bold px-3.5 py-2.5 rounded-xl text-sm flex items-center gap-2 transition">
+                            <i class="fa-solid fa-file-excel text-emerald-700"></i>
+                            <span class="hidden sm:inline">Excel Activos</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Cuadrícula de Tarjetas de Animales Activos -->
+                <div id="animals-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <!-- Dinámico -->
+                </div>
+
+                <!-- Estado Vacío -->
+                <div id="empty-state" class="hidden bg-white rounded-2xl p-12 text-center card-shadow border-2 border-dashed border-goldWarm-400">
+                    <div class="w-16 h-16 bg-goldWarm-100 text-goldWarm-700 rounded-full flex items-center justify-center mx-auto text-2xl mb-4">
+                        <i class="fa-solid fa-cow"></i>
+                    </div>
+                    <h3 class="font-display font-bold text-lg text-charcoal">No se encontraron bovinos activos</h3>
+                    <p class="text-sm text-gray-500 max-w-md mx-auto mt-1 mb-5">No hay registros que coincidan con tu búsqueda o aún no has agregado ganado activo.</p>
+                    <button onclick="openNewAnimalModal()" class="bg-emeraldDeep-700 hover:bg-emeraldDeep-800 text-white font-bold px-5 py-2.5 rounded-xl text-sm shadow transition">
+                        <i class="fa-solid fa-plus mr-1.5"></i> Registrar Bovino
+                    </button>
+                </div>
+            </div>
+
+            <!-- =============================================================== -->
+            <!-- VISTA 3: GANADO VENDIDO (HISTORIAL DE VENTAS)                   -->
+            <!-- =============================================================== -->
+            <div id="view-vendidos" class="hidden space-y-5">
+                <div class="bg-gradient-to-r from-amber-800 to-goldWarm-700 text-white rounded-2xl p-5 shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="font-display font-extrabold text-xl flex items-center gap-2">
+                            <i class="fa-solid fa-handshake text-goldWarm-300"></i> Registro de Ganado Vendido
+                        </h2>
+                        <p class="text-xs sm:text-sm text-amber-100 mt-0.5">
+                            Aquí se conservan todos los animales que han sido vendidos junto con su historial completo de pesos, vacunas y datos de venta.
+                        </p>
+                    </div>
+                    <button onclick="exportToCSV('sold')" class="bg-white text-amber-900 hover:bg-amber-50 font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm shadow flex items-center gap-2 self-start sm:self-center transition">
+                        <i class="fa-solid fa-file-excel text-emerald-700"></i> Exportar Vendidos
+                    </button>
+                </div>
+
+                <div id="sold-animals-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <!-- Dinámico -->
+                </div>
+
+                <div id="empty-sold-state" class="hidden bg-white rounded-2xl p-12 text-center card-shadow border-2 border-dashed border-amber-300">
+                    <div class="w-16 h-16 bg-amber-100 text-amber-700 rounded-full flex items-center justify-center mx-auto text-2xl mb-4">
+                        <i class="fa-solid fa-handshake"></i>
+                    </div>
+                    <h3 class="font-display font-bold text-lg text-charcoal">Aún no hay animales marcados como vendidos</h3>
+                    <p class="text-sm text-gray-500 max-w-md mx-auto mt-1">
+                        Cuando vendas un animal, abre su ficha y presiona <strong>"Marcar como Vendido"</strong> para moverlo aquí sin perder su historial.
+                    </p>
+                </div>
+            </div>
+
+            <!-- =============================================================== -->
+            <!-- VISTA 4: BITÁCORA GENERAL CRONOLÓGICA                           -->
+            <!-- =============================================================== -->
+            <div id="view-bitacora" class="hidden space-y-5">
+                <div class="bg-white rounded-2xl p-6 card-shadow border border-goldWarm-300/40">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-100">
+                        <div>
+                            <h2 class="font-display font-bold text-xl text-emeraldDeep-900">Bitácora Cronológica de Mi Haciendita</h2>
+                            <p class="text-sm text-gray-500">Historial unificado de pesajes, vacunas, vitaminas, desparasitantes y ventas.</p>
+                        </div>
+                        <select id="log-filter" onchange="renderGlobalLog()" class="bg-creamWarm border border-gray-200 rounded-xl px-3.5 py-2 text-sm font-semibold">
+                            <option value="all">Todas las actividades</option>
+                            <option value="pesaje">⚖️ Solo Pesajes</option>
+                            <option value="Vacuna">💉 Solo Vacunas</option>
+                            <option value="Vitamina">💊 Solo Vitaminas</option>
+                            <option value="Desparasitante">🛡️ Solo Desparasitantes</option>
+                            <option value="venta">🤝 Solo Ventas</option>
+                        </select>
+                    </div>
+
+                    <div id="global-log-list" class="divide-y divide-gray-100 mt-2">
+                        <!-- Dinámico -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- =============================================================== -->
+            <!-- VISTA 5: CONFIGURACIÓN DE FINCA, EQUIPO Y RESPALDO              -->
+            <!-- =============================================================== -->
+            <div id="view-finca" class="hidden space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Datos de la Ganadería / Propietario -->
+                    <form onsubmit="saveRanchSettings(event)" class="bg-white rounded-2xl p-6 card-shadow border border-goldWarm-300/50 space-y-4">
+                        <h3 class="font-display font-bold text-lg text-emeraldDeep-900 flex items-center gap-2 border-b pb-3">
+                            <i class="fa-solid fa-house-chimney text-goldWarm-600"></i> Identidad de la Ganadería
+                        </h3>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Nombre del Hato o Ganadería *</label>
+                            <input type="text" id="cfg-ranch-name" required placeholder="Ej. Ganadería La Esperanza" 
+                                class="w-full px-3.5 py-2.5 bg-creamWarm border border-gray-300 rounded-xl text-sm font-semibold">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Nombre del Propietario *</label>
+                            <input type="text" id="cfg-owner-name" required placeholder="Ej. Carlos Mendoza" 
+                                class="w-full px-3.5 py-2.5 bg-creamWarm border border-gray-300 rounded-xl text-sm">
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Ubicación / Aldea / Municipio</label>
+                                <input type="text" id="cfg-location" placeholder="Ej. Valle de Olanchito" 
+                                    class="w-full px-3.5 py-2.5 bg-creamWarm border border-gray-300 rounded-xl text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Unidad de Peso Preferida</label>
+                                <select id="cfg-unit" class="w-full px-3.5 py-2.5 bg-creamWarm border border-gray-300 rounded-xl text-sm font-bold">
+                                    <option value="kg">Kilogramos (kg)</option>
+                                    <option value="lbs">Libras (lbs)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-emeraldDeep-700 hover:bg-emeraldDeep-800 text-white font-bold py-3 rounded-xl text-sm shadow transition">
+                            <i class="fa-solid fa-floppy-disk mr-1.5"></i> Guardar Datos de Mi Haciendita
+                        </button>
+                    </form>
+
+                    <!-- Vinculación de Colaborador y Sincronización -->
+                    <div class="bg-white rounded-2xl p-6 card-shadow border border-goldWarm-300/50 space-y-4">
+                        <h3 class="font-display font-bold text-lg text-emeraldDeep-900 flex items-center gap-2 border-b pb-3">
+                            <i class="fa-solid fa-users-gear text-goldWarm-600"></i> Colaboración y 2 Dispositivos
+                        </h3>
+
+                        <div class="bg-emeraldDeep-50 border border-emeraldDeep-600/20 rounded-2xl p-4 space-y-2">
+                            <span class="text-xs font-bold uppercase text-emeraldDeep-800 block">Código de Vinculación de este Hato:</span>
+                            <div class="flex items-center gap-2">
+                                <input type="text" id="display-herd-code" readonly class="w-full bg-white border border-emeraldDeep-600/30 rounded-xl px-3.5 py-2 font-mono font-extrabold text-emeraldDeep-900 text-base tracking-wider">
+                                <button onclick="copyHerdCode()" class="bg-emeraldDeep-700 hover:bg-emeraldDeep-800 text-white px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap">
+                                    <i class="fa-solid fa-copy mr-1"></i> Copiar
+                                </button>
+                            </div>
+                            <p class="text-xs text-gray-600">
+                                Comparte este código con tu encargado o familiar. Cuando esa persona cree su cuenta e ingrese este código, podrá registrar pesajes y vacunas en este mismo hato.
+                            </p>
+                        </div>
+
+                        <!-- Unirse a otro hato mediante código -->
+                        <div class="pt-2 space-y-2">
+                            <label class="block text-xs font-bold uppercase text-gray-600">¿Te compartieron un Código de Hato? Vincúlate aquí:</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="input-join-herd-code" placeholder="Pega el código del hato (Ej. HATO-8492)" class="w-full px-3.5 py-2 bg-creamWarm border border-gray-300 rounded-xl font-mono text-sm uppercase">
+                                <button onclick="joinHerdByCode()" class="bg-goldWarm-500 hover:bg-goldWarm-600 text-emeraldDeep-950 font-bold px-4 py-2 rounded-xl text-xs whitespace-nowrap">
+                                    Vincular Hato
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Respaldo Manual JSON -->
+                        <div class="pt-3 border-t border-gray-100 space-y-2">
+                            <span class="text-xs font-bold uppercase text-gray-500 block">Copia de Seguridad en Archivo</span>
+                            <div class="grid grid-cols-2 gap-2.5">
+                                <button onclick="downloadBackupJSON()" class="bg-gray-100 hover:bg-gray-200 text-charcoal font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5">
+                                    <i class="fa-solid fa-download"></i> Descargar Respaldo
+                                </button>
+                                <label class="bg-goldWarm-100 hover:bg-goldWarm-200 text-amber-900 font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 cursor-pointer">
+                                    <i class="fa-solid fa-upload"></i> Restaurar Respaldo
+                                    <input type="file" accept=".json" onchange="restoreBackupJSON(event)" class="hidden">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-white border-t border-goldWarm-300/50 py-4 mt-10">
+            <div class="max-w-7xl mx-auto px-4 text-center text-xs text-gray-500 flex flex-col sm:flex-row justify-between items-center gap-2">
+                <span><strong class="text-emeraldDeep-800">Mi Haciendita</strong> • Bitácora Ganadera Bovina</span>
+                <span id="footer-sync-status">Guardado automático activo</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 1: AUTENTICACIÓN, CUENTA Y CONTROL DE 2 DISPOSITIVOS            -->
+    <!-- ===================================================================== -->
+    <div id="modal-auth" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl border-2 border-goldWarm-400 overflow-hidden my-6">
+            <div class="bg-emeraldDeep-900 text-white px-6 py-4 flex items-center justify-between border-b-4 border-goldWarm-400">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-user-shield text-goldWarm-400 text-lg"></i>
+                    <h3 id="auth-modal-title" class="font-display font-bold text-lg">Cuenta y Sincronización</h3>
+                </div>
+                <button onclick="closeAuthModal()" class="text-emerald-200 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+
+            <div class="p-6 space-y-4">
+                <!-- Vista cuando ya hay sesión activa -->
+                <div id="auth-logged-in-view" class="hidden space-y-4">
+                    <div class="bg-emeraldDeep-50 p-4 rounded-2xl border border-emeraldDeep-600/20">
+                        <p class="text-xs text-emeraldDeep-700 font-bold uppercase">Sesión Conectada en la Nube</p>
+                        <p id="auth-user-email" class="font-bold text-charcoal text-base mt-0.5">usuario@correo.com</p>
+                        <p class="text-xs text-gray-500 mt-1">Hato vinculado: <strong id="auth-user-herd" class="font-mono text-emeraldDeep-800">---</strong></p>
+                    </div>
+
+                    <!-- Lista de Dispositivos Vinculados (Máximo 2) -->
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase text-gray-600">Dispositivos Activos en esta Cuenta</span>
+                            <span id="auth-device-count" class="text-xs font-extrabold text-emeraldDeep-700 bg-emeraldDeep-100 px-2 py-0.5 rounded-full">1 / 2</span>
+                        </div>
+                        <div id="auth-devices-list" class="space-y-2">
+                            <!-- Dinámico -->
+                        </div>
+                    </div>
+
+                    <button onclick="logoutUser()" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 rounded-xl text-sm shadow transition">
+                        <i class="fa-solid fa-right-from-bracket mr-1.5"></i> Cerrar Sesión en este Dispositivo
+                    </button>
+                </div>
+
+                <!-- Alerta de Límite de 2 Dispositivos Alcanzado -->
+                <div id="auth-device-limit-view" class="hidden space-y-4">
+                    <div class="bg-rose-50 border-2 border-rose-300 rounded-2xl p-4 text-center space-y-2">
+                        <i class="fa-solid fa-mobile-screen-button text-rose-600 text-3xl"></i>
+                        <h4 class="font-display font-bold text-rose-800 text-base">Límite de 2 Dispositivos Alcanzado</h4>
+                        <p class="text-xs text-rose-700">
+                            Por seguridad, este usuario solo permite <strong>2 dispositivos simultáneos</strong>. Desvincula un dispositivo anterior para autorizar este teléfono/PC.
+                        </p>
+                    </div>
+                    <div id="limit-devices-list" class="space-y-2">
+                        <!-- Dinámico -->
+                    </div>
+                    <button onclick="cancelBlockedLogin()" class="w-full bg-gray-200 hover:bg-gray-300 text-charcoal font-bold py-2.5 rounded-xl text-xs">
+                        Cancelar y volver
+                    </button>
+                </div>
+
+                <!-- Formulario Login / Registro -->
+                <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+                    <div class="flex bg-creamWarm p-1 rounded-xl border border-gray-200">
+                        <button type="button" id="tab-auth-login" onclick="switchAuthMode('login')" class="flex-1 py-2 rounded-lg text-xs font-bold bg-emeraldDeep-800 text-white shadow">
+                            Iniciar Sesión
+                        </button>
+                        <button type="button" id="tab-auth-register" onclick="switchAuthMode('register')" class="flex-1 py-2 rounded-lg text-xs font-bold text-gray-600">
+                            Crear Cuenta Nueva
+                        </button>
+                    </div>
+
+                    <div id="auth-name-field" class="hidden">
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Tu Nombre *</label>
+                        <input type="text" id="auth-input-name" placeholder="Ej. Juan Pérez" class="w-full px-3.5 py-2.5 bg-creamWarm border border-gray-300 rounded-xl text-sm">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Correo Electrónico *</label>
+                        <input type="email" id="auth-input-email" required placeholder="tu@correo.com" class="w-full px-3.5 py-2.5 bg-creamWarm border border-gray-300 rounded-xl text-sm">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Contraseña *</label>
+                        <input type="password" id="auth-input-pass" required minlength="6" placeholder="Mínimo 6 caracteres" class="w-full px-3.5 py-2.5 bg-creamWarm border border-gray-300 rounded-xl text-sm">
+                    </div>
+
+                    <div id="auth-herd-code-field" class="hidden">
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Código de Hato (Opcional - solo si te invitaron)</label>
+                        <input type="text" id="auth-input-herd" placeholder="Déjalo vacío si eres el dueño" class="w-full px-3.5 py-2.5 bg-creamWarm border border-gray-300 rounded-xl font-mono text-sm uppercase">
+                    </div>
+
+                    <button type="submit" id="auth-submit-btn" class="w-full bg-gradient-to-r from-goldWarm-400 to-goldWarm-600 hover:from-goldWarm-500 hover:to-goldWarm-700 text-emeraldDeep-950 font-display font-extrabold py-3 rounded-xl text-sm shadow-md transition">
+                        Entrar y Sincronizar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 2: REGISTRAR / EDITAR BOVINO                                    -->
+    <!-- ===================================================================== -->
+    <div id="modal-new-animal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-2xl w-full shadow-2xl border-2 border-goldWarm-400 overflow-hidden my-8">
+            <div class="bg-emeraldDeep-900 text-white px-6 py-4 flex items-center justify-between border-b-4 border-goldWarm-400">
+                <div class="flex items-center gap-2.5">
+                    <i class="fa-solid fa-cow text-goldWarm-400 text-xl"></i>
+                    <h2 id="form-animal-title" class="font-display font-bold text-lg">Registrar Nuevo Bovino</h2>
+                </div>
+                <button onclick="closeNewAnimalModal()" class="text-emerald-200 hover:text-white p-1.5 rounded-lg">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <form id="animal-form" onsubmit="saveAnimal(event)" class="p-6 space-y-5 max-h-[82vh] overflow-y-auto">
+                <input type="hidden" id="edit-animal-id">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1.5">Nombre o Identificador *</label>
+                        <input type="text" id="input-name" required placeholder="Ej. La Estrella, Toro Bravo, #04" 
+                            class="w-full px-3.5 py-2.5 bg-creamWarm border border-gray-300 rounded-xl text-sm focus:outline-none focus:border-emeraldDeep-600">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1.5">Categoría / Sexo *</label>
+                        <select id="input-category" required class="w-full px-3.5 py-2.5 bg-creamWarm border border-gray-300 rounded-xl text-sm focus:outline-none">
+                            <option value="Vaca">🐄 Vaca (Hembra adulta)</option>
+                            <option value="Toro">🐂 Toro (Macho reproductor)</option>
+                            <option value="Novillo">🐃 Novillo (Macho joven)</option>
+                            <option value="Vaquilla">🐄 Vaquilla (Hembra joven)</option>
+                            <option value="Ternero">🐮 Ternero (Cría macho)</option>
+                            <option value="Ternera">🐮 Ternera (Cría hembra)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Control de Arete -->
+                <div class="bg-goldWarm-100/60 p-4 rounded-2xl border border-goldWarm-300 space-y-3">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <label class="text-xs font-bold uppercase text-amber-900 flex items-center gap-1.5">
+                            <i class="fa-solid fa-tag"></i> ¿El animal usa arete de identificación?
+                        </label>
+                        <div class="flex gap-3">
+                            <label class="inline-flex items-center cursor-pointer bg-white px-3 py-1.5 rounded-xl border border-gray-200 text-sm font-semibold">
+                                <input type="radio" name="hasEarTag" value="yes" checked onchange="toggleEarTagInput()" class="mr-2">
+                                Sí usa arete
+                            </label>
+                            <label class="inline-flex items-center cursor-pointer bg-white px-3 py-1.5 rounded-xl border border-gray-200 text-sm font-semibold">
+                                <input type="radio" name="hasEarTag" value="no" onchange="toggleEarTagInput()" class="mr-2">
+                                No usa arete
+                            </label>
+                        </div>
+                    </div>
+                    <div id="ear-tag-number-container">
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Número / Código de Arete *</label>
+                        <input type="text" id="input-eartag" placeholder="Ej. HN-4582 o A-102" 
+                            class="w-full px-3.5 py-2 bg-white border border-gray-300 rounded-xl text-sm font-mono">
+                    </div>
+                </div>
+
+                <!-- Genética y Raza -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1.5">Condición Genética *</label>
+                        <select id="input-genetics" required class="w-full px-3.5 py-2.5 bg-creamWarm border border-gray-300 rounded-xl text-sm">
+                            <option value="Pura">🏅 Raza Pura</option>
+                            <option value="Criollo">🌿 Criollo</option>
+                            <option value="Cruce">🧬 Cruce / Mestizo</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1.5">Raza Específica *</label>
+                        <input type="text" id="input-breed" required list="breeds-list" placeholder="Ej. Brahman, Pardo Suizo, Criollo..." 
+                            class="w-full px-3.5 py-2.5 bg-creamWarm border border-gray-300 rounded-xl text-sm">
+                        <datalist id="breeds-list">
+                            <option value="Brahman">
+                            <option value="Pardo Suizo">
+                            <option value="Holstein">
+                            <option value="Gyr">
+                            <option value="Girolando">
+                            <option value="Simmental">
+                            <option value="Angus">
+                            <option value="Nelore">
+                            <option value="Jersey">
+                            <option value="Criollo">
+                        </datalist>
+                    </div>
+                </div>
+
+                <!-- Fecha de Entrada y Peso Inicial -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="initial-weight-section">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1.5">Día de Entrada a la Finca *</label>
+                        <input type="date" id="input-entry-date" required 
+                            class="w-full px-3.5 py-2.5 bg-creamWarm border border-gray-300 rounded-xl text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1.5">Peso de Entrada *</label>
+                        <div class="flex">
+                            <input type="number" step="0.1" min="1" id="input-initial-weight" required placeholder="Ej. 240" 
+                                class="w-full px-3.5 py-2.5 bg-creamWarm border border-r-0 border-gray-300 rounded-l-xl text-sm">
+                            <select id="input-weight-unit" class="bg-gray-100 border border-gray-300 rounded-r-xl px-3 text-sm font-bold text-charcoal">
+                                <option value="kg">kg</option>
+                                <option value="lbs">lbs</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-600 mb-1.5">Observaciones / Señas (Opcional)</label>
+                    <textarea id="input-notes" rows="2" placeholder="Pelaje, procedencia, madre o comentario..." 
+                        class="w-full px-3.5 py-2 bg-creamWarm border border-gray-300 rounded-xl text-sm"></textarea>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-3 border-t border-gray-100">
+                    <button type="button" onclick="closeNewAnimalModal()" class="px-4 py-2.5 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="bg-emeraldDeep-700 hover:bg-emeraldDeep-800 text-white font-bold px-6 py-2.5 rounded-xl text-sm shadow-md">
+                        <i class="fa-solid fa-check mr-1.5"></i> Guardar Bovino
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 3: MARCAR ANIMAL COMO VENDIDO                                   -->
+    <!-- ===================================================================== -->
+    <div id="modal-sell" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl border-2 border-amber-500 overflow-hidden">
+            <div class="bg-amber-700 text-white px-6 py-4 flex items-center justify-between border-b-4 border-goldWarm-400">
+                <h3 class="font-display font-bold text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-handshake text-goldWarm-300"></i> Registrar Venta del Animal
+                </h3>
+                <button onclick="closeSellModal()" class="text-amber-100 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form onsubmit="confirmSellAnimal(event)" class="p-6 space-y-4">
+                <p class="text-xs text-gray-600 bg-amber-50 p-3 rounded-xl border border-amber-200">
+                    El animal pasará a la sección <strong>Ganado Vendido</strong>. Sus pesajes, vacunas y tratamientos quedarán guardados para consulta histórica.
+                </p>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Fecha de Venta *</label>
+                        <input type="date" id="sell-date" required class="w-full px-3 py-2 bg-creamWarm border border-gray-300 rounded-xl text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Peso de Salida (<span class="unit-label">kg</span>) *</label>
+                        <input type="number" step="0.1" min="1" id="sell-weight" required class="w-full px-3 py-2 bg-creamWarm border border-gray-300 rounded-xl text-sm font-bold">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Comprador / Destino (Opcional)</label>
+                    <input type="text" id="sell-buyer" placeholder="Ej. Subasta Ganadera / Don Roberto" class="w-full px-3.5 py-2 bg-creamWarm border border-gray-300 rounded-xl text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Precio o Nota de Venta (Opcional)</label>
+                    <input type="text" id="sell-note" placeholder="Ej. L. 28,500 - Venta de contado" class="w-full px-3.5 py-2 bg-creamWarm border border-gray-300 rounded-xl text-sm">
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeSellModal()" class="px-4 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-100">Cancelar</button>
+                    <button type="submit" class="bg-amber-700 hover:bg-amber-800 text-white font-bold px-5 py-2 rounded-xl text-sm shadow">
+                        Confirmar Venta
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 4: FICHA INDIVIDUAL DETALLADA (PESAJE, SANIDAD Y VENTA)         -->
+    <!-- ===================================================================== -->
+    <div id="modal-detail" class="fixed inset-0 z-40 hidden modal-backdrop flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+        <div class="bg-creamWarm rounded-3xl max-w-4xl w-full shadow-2xl border-2 border-goldWarm-400 overflow-hidden my-4 flex flex-col max-h-[92vh]">
+            
+            <!-- Encabezado Ficha -->
+            <div id="detail-header-bg" class="bg-emeraldDeep-900 text-white px-5 sm:px-7 py-5 border-b-4 border-goldWarm-400 flex-shrink-0">
+                <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div id="detail-avatar" class="w-14 h-14 rounded-2xl bg-goldWarm-400 text-emeraldDeep-950 flex items-center justify-center text-3xl shadow-inner flex-shrink-0">
+                            🐄
+                        </div>
+                        <div>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <h2 id="detail-name" class="font-display font-extrabold text-xl sm:text-2xl text-white">Nombre Animal</h2>
+                                <span id="detail-sold-pill" class="hidden px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-rose-600 text-white uppercase tracking-wider">
+                                    VENDIDO
+                                </span>
+                                <span id="detail-eartag-badge" class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-goldWarm-400 text-emeraldDeep-950">
+                                    Arete #123
+                                </span>
+                                <span id="detail-genetics-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emeraldDeep-700 text-white border border-white/20">
+                                    Raza Pura
+                                </span>
+                            </div>
+                            <p id="detail-subtitle" class="text-xs sm:text-sm text-emerald-100 mt-1">
+                                Brahman • Vaca
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <!-- Botón Vender / Reactivar -->
+                        <button id="btn-sell-animal" onclick="openSellModal()" class="px-3 py-2 bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold rounded-xl shadow flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-handshake"></i> Marcar Vendido
+                        </button>
+                        <button id="btn-reactivate-animal" onclick="reactivateAnimal()" class="hidden px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-rotate-left"></i> Devolver al Hato
+                        </button>
+
+                        <button onclick="editCurrentAnimal()" title="Editar datos" class="p-2 bg-emeraldDeep-800 hover:bg-emeraldDeep-700 text-emerald-100 hover:text-white rounded-xl transition">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button onclick="requestDeleteAnimal()" title="Eliminar registro" class="p-2 bg-rose-900/70 hover:bg-rose-700 text-rose-200 hover:text-white rounded-xl transition">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                        <button onclick="closeDetailModal()" class="p-2 bg-emeraldDeep-800 hover:bg-emeraldDeep-700 text-white rounded-xl ml-1 transition">
+                            <i class="fa-solid fa-xmark text-lg"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Banner de Datos de Venta si está vendido -->
+                <div id="detail-sale-banner" class="hidden mt-4 bg-amber-950/70 border border-goldWarm-400/50 rounded-2xl p-3 text-xs text-amber-100 flex flex-wrap items-center justify-between gap-2">
+                    <span><i class="fa-solid fa-handshake text-goldWarm-400 mr-1.5"></i> <strong id="detail-sale-summary">Vendido el --</strong></span>
+                    <span id="detail-sale-note" class="text-goldWarm-300 font-semibold"></span>
+                </div>
+
+                <!-- Resumen de Pesos -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 pt-4 border-t border-emeraldDeep-700">
+                    <div class="bg-emeraldDeep-950/60 rounded-xl p-2.5 px-3.5">
+                        <span class="text-[11px] uppercase text-emerald-200/80 block">Peso Entrada</span>
+                        <span id="detail-w-initial" class="font-display font-bold text-base sm:text-lg text-white">0 kg</span>
+                    </div>
+                    <div class="bg-emeraldDeep-950/60 rounded-xl p-2.5 px-3.5">
+                        <span class="text-[11px] uppercase text-emerald-200/80 block">Último Peso</span>
+                        <span id="detail-w-current" class="font-display font-bold text-base sm:text-lg text-goldWarm-400">0 kg</span>
+                    </div>
+                    <div class="bg-emeraldDeep-950/60 rounded-xl p-2.5 px-3.5">
+                        <span class="text-[11px] uppercase text-emerald-200/80 block">Ganancia Total</span>
+                        <span id="detail-w-gain" class="font-display font-bold text-base sm:text-lg text-emerald-400">+0 kg</span>
+                    </div>
+                    <div class="bg-emeraldDeep-950/60 rounded-xl p-2.5 px-3.5">
+                        <span class="text-[11px] uppercase text-emerald-200/80 block">Ganancia Diaria</span>
+                        <span id="detail-w-gdp" class="font-display font-bold text-base sm:text-lg text-white">0 kg/día</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pestañas Internas -->
+            <div class="bg-white border-b border-gray-200 px-5 sm:px-7 flex gap-6 flex-shrink-0">
+                <button onclick="switchDetailTab('pesaje')" id="tab-btn-pesaje" class="py-3.5 text-sm font-bold border-b-2 border-emeraldDeep-700 text-emeraldDeep-900 flex items-center gap-2">
+                    <i class="fa-solid fa-weight-scale"></i> Control de Peso
+                </button>
+                <button onclick="switchDetailTab('sanidad')" id="tab-btn-sanidad" class="py-3.5 text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-charcoal flex items-center gap-2">
+                    <i class="fa-solid fa-syringe"></i> Vacunas, Vitaminas y Desparasitantes
+                </button>
+            </div>
+
+            <!-- Cuerpo Desplazable -->
+            <div class="p-5 sm:p-7 overflow-y-auto flex-grow space-y-6">
+                <div id="detail-notes-box" class="hidden bg-goldWarm-100/80 border border-goldWarm-300 rounded-xl p-3 text-xs text-amber-900 flex items-start gap-2">
+                    <i class="fa-solid fa-circle-info mt-0.5"></i>
+                    <span id="detail-notes-text"></span>
+                </div>
+
+                <!-- SECCIÓN 1: CONTROL DE PESAJE -->
+                <div id="detail-sec-pesaje" class="space-y-6">
+                    <form onsubmit="addWeightRecord(event)" class="bg-white p-4 rounded-2xl border border-goldWarm-300/60 card-shadow">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-emeraldDeep-800 mb-3 flex items-center gap-1.5">
+                            <i class="fa-solid fa-plus-circle text-goldWarm-600"></i> Registrar Nuevo Pesaje
+                        </h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+                            <div class="sm:col-span-3">
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">Fecha Pesaje *</label>
+                                <input type="date" id="new-weight-date" required class="w-full px-3 py-2 bg-creamWarm border border-gray-300 rounded-xl text-sm">
+                            </div>
+                            <div class="sm:col-span-3">
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">Peso (<span class="unit-label">kg</span>) *</label>
+                                <input type="number" step="0.1" min="1" id="new-weight-val" required placeholder="Ej. 310" class="w-full px-3 py-2 bg-creamWarm border border-gray-300 rounded-xl text-sm font-bold">
+                            </div>
+                            <div class="sm:col-span-4">
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">Observación</label>
+                                <input type="text" id="new-weight-note" placeholder="Ej. Control mensual, destete..." class="w-full px-3 py-2 bg-creamWarm border border-gray-300 rounded-xl text-sm">
+                            </div>
+                            <div class="sm:col-span-2">
+                                <button type="submit" class="w-full bg-emeraldDeep-700 hover:bg-emeraldDeep-800 text-white font-bold py-2 px-3 rounded-xl text-sm shadow">
+                                    Guardar
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Gráfica -->
+                    <div class="bg-white p-4 rounded-2xl border border-gray-200 card-shadow">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3">Evolución del Peso</h4>
+                        <div class="h-52 w-full">
+                            <canvas id="weightChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Tabla de Pesajes -->
+                    <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden card-shadow">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-creamWarm text-xs uppercase text-gray-600 border-b">
+                                    <tr>
+                                        <th class="px-4 py-3">Fecha</th>
+                                        <th class="px-4 py-3">Días</th>
+                                        <th class="px-4 py-3">Peso</th>
+                                        <th class="px-4 py-3">Variación</th>
+                                        <th class="px-4 py-3">Nota</th>
+                                        <th class="px-4 py-3 text-right">Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="weight-history-tbody" class="divide-y divide-gray-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 2: CONTROL SANITARIO -->
+                <div id="detail-sec-sanidad" class="hidden space-y-6">
+                    <form onsubmit="addHealthRecord(event)" class="bg-white p-4 rounded-2xl border border-goldWarm-300/60 card-shadow space-y-3">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-emeraldDeep-800 flex items-center gap-1.5">
+                            <i class="fa-solid fa-kit-medical text-goldWarm-600"></i> Registrar Vacuna, Vitamina o Desparasitante
+                        </h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">Tipo *</label>
+                                <select id="health-type" required class="w-full px-3 py-2 bg-creamWarm border border-gray-300 rounded-xl text-sm font-semibold">
+                                    <option value="Vacuna">💉 Vacuna</option>
+                                    <option value="Vitamina">💊 Vitamina / Mineral</option>
+                                    <option value="Desparasitante">🛡️ Desparasitante</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">Producto *</label>
+                                <input type="text" id="health-product" required list="products-list" placeholder="Ej. Ivermectina, Complejo B..." class="w-full px-3 py-2 bg-creamWarm border border-gray-300 rounded-xl text-sm">
+                                <datalist id="products-list">
+                                    <option value="Fiebre Aftosa">
+                                    <option value="Brucelosis (Cepa 19)">
+                                    <option value="Carbunco / Ántrax">
+                                    <option value="Triple Bovina">
+                                    <option value="Rabia Bovina">
+                                    <option value="Complejo B + ADE">
+                                    <option value="Catosal (Fósforo + B12)">
+                                    <option value="Modificador Orgánico">
+                                    <option value="Ivermectina 1%">
+                                    <option value="Ivermectina 3.15% L.A.">
+                                    <option value="Albendazol Oral">
+                                </datalist>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">Fecha Aplicación *</label>
+                                <input type="date" id="health-date" required class="w-full px-3 py-2 bg-creamWarm border border-gray-300 rounded-xl text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">Próximo Refuerzo</label>
+                                <input type="date" id="health-next-date" class="w-full px-3 py-2 bg-creamWarm border border-gray-300 rounded-xl text-sm">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+                            <div class="sm:col-span-4">
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">Dosis y Vía</label>
+                                <input type="text" id="health-dose" placeholder="Ej. 5 ml SC" class="w-full px-3 py-2 bg-creamWarm border border-gray-300 rounded-xl text-sm">
+                            </div>
+                            <div class="sm:col-span-6">
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">Observaciones</label>
+                                <input type="text" id="health-notes" placeholder="Comentario adicional..." class="w-full px-3 py-2 bg-creamWarm border border-gray-300 rounded-xl text-sm">
+                            </div>
+                            <div class="sm:col-span-2">
+                                <button type="submit" class="w-full bg-emeraldDeep-700 hover:bg-emeraldDeep-800 text-white font-bold py-2 px-3 rounded-xl text-sm shadow">
+                                    Registrar
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div id="health-history-list" class="space-y-2.5"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 5: CONFIRMACIÓN PERSONALIZADA                                   -->
+    <!-- ===================================================================== -->
+    <div id="modal-confirm" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-gray-200 text-center space-y-4">
+            <div class="w-14 h-14 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto text-2xl">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 id="confirm-title" class="font-display font-bold text-lg text-charcoal">¿Estás seguro?</h3>
+            <p id="confirm-desc" class="text-sm text-gray-600">Esta acción eliminará el registro permanentemente.</p>
+            <div class="flex justify-center gap-3 pt-2">
+                <button onclick="closeConfirmModal()" class="px-5 py-2.5 rounded-xl text-sm font-semibold bg-gray-100 hover:bg-gray-200 text-gray-700">
+                    Cancelar
+                </button>
+                <button id="confirm-action-btn" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-rose-600 hover:bg-rose-700 text-white shadow">
+                    Sí, eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- SCRIPTS DE FIREBASE Y LÓGICA DE APLICACIÓN                            -->
+    <!-- ===================================================================== -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            createUserWithEmailAndPassword, 
+            signInAnonymously,
+            signInWithCustomToken,
+            onAuthStateChanged,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            doc, 
+            getDoc, 
+            setDoc, 
+            onSnapshot 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Configuración de Firebase provista por el entorno
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'mi-haciendita-default';
+        let firebaseEnabled = false;
+        let auth = null;
+        let db = null;
+
+        try {
+            if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                const firebaseConfig = JSON.parse(__firebase_config);
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                firebaseEnabled = true;
+            }
+        } catch (err) {
+            console.warn("Firebase no configurado, operando en modo local:", err);
+        }
+
+        // Identificador único de este dispositivo (persistente en el navegador)
+        const DEVICE_ID_KEY = 'mi_haciendita_device_id';
+        let currentDeviceId = localStorage.getItem(DEVICE_ID_KEY);
+        if (!currentDeviceId) {
+            currentDeviceId = 'DEV-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+            localStorage.setItem(DEVICE_ID_KEY, currentDeviceId);
+        }
+
+        function getDeviceFriendlyName() {
+            const ua = navigator.userAgent;
+            if (/Android/i.test(ua)) return 'Teléfono Android';
+            if (/iPhone|iPad/i.test(ua)) return 'iPhone / iPad';
+            if (/Windows/i.test(ua)) return 'Computadora Windows';
+            if (/Mac/i.test(ua)) return 'Mac';
+            return 'Navegador Web';
+        }
+
+        // Estado global expuesto a window
+        const LOCAL_STORAGE_KEY = 'mi_haciendita_data_v2';
+        const KG_TO_LBS = 2.20462;
+
+        window.appState = {
+            ranchName: 'Ganadería La Esperanza',
+            ownerName: 'Familia Ganadera',
+            location: 'Finca Familiar',
+            globalUnit: 'kg',
+            herdCode: 'HATO-' + Math.floor(1000 + Math.random() * 9000),
+            animals: []
+        };
+
+        let currentUser = null;
+        let unsubscribeHerd = null;
+        let selectedAnimalId = null;
+        let weightChartInstance = null;
+        let authMode = 'login';
+        let pendingBlockedUser = null;
+
+        // Datos iniciales de demostración
+        const DEMO_ANIMALS = [
+            {
+                id: 'bov-101',
+                name: 'La Reyna',
+                hasEarTag: true,
+                earTag: 'HN-1042',
+                genetics: 'Pura',
+                breed: 'Brahman',
+                category: 'Vaca',
+                entryDate: '2026-01-15',
+                status: 'active',
+                saleInfo: null,
+                notes: 'Hembra reproductora de excelente conformación muscular, pelaje blanco plateado.',
+                weights: [
+                    { id: 'w1', date: '2026-01-15', weightKg: 410, note: 'Peso de llegada a la finca' },
+                    { id: 'w2', date: '2026-04-15', weightKg: 438, note: 'Control trimestral' },
+                    { id: 'w3', date: '2026-08-20', weightKg: 465, note: 'Excelente condición en pastoreo' }
+                ],
+                health: [
+                    { id: 'h1', type: 'Vacuna', product: 'Triple Bovina', date: '2026-01-20', nextDate: '2026-07-20', dose: '5 ml SC', notes: 'Refuerzo semestral' },
+                    { id: 'h2', type: 'Desparasitante', product: 'Ivermectina 3.15% L.A.', date: '2026-05-10', nextDate: '2026-11-30', dose: '9 ml SC', notes: 'Control garrapatas' }
+                ]
+            },
+            {
+                id: 'bov-102',
+                name: 'El Sultán',
+                hasEarTag: true,
+                earTag: 'HN-2088',
+                genetics: 'Pura',
+                breed: 'Pardo Suizo',
+                category: 'Toro',
+                entryDate: '2025-11-10',
+                status: 'active',
+                saleInfo: null,
+                notes: 'Semental principal del hato. Muy manso.',
+                weights: [
+                    { id: 'w4', date: '2025-11-10', weightKg: 580, note: 'Ingreso como semental' },
+                    { id: 'w5', date: '2026-05-10', weightKg: 625, note: 'Ganancia constante' }
+                ],
+                health: [
+                    { id: 'h4', type: 'Vitamina', product: 'Catosal (Fósforo + B12)', date: '2026-06-12', nextDate: '', dose: '15 ml IM', notes: 'Vigor reproductivo' }
+                ]
+            },
+            {
+                id: 'bov-103',
+                name: 'Pinto del Río',
+                hasEarTag: false,
+                earTag: '',
+                genetics: 'Criollo',
+                breed: 'Criollo',
+                category: 'Novillo',
+                entryDate: '2026-02-20',
+                status: 'active',
+                saleInfo: null,
+                notes: 'Criollo muy resistente al calor. Pendiente arete.',
+                weights: [
+                    { id: 'w7', date: '2026-02-20', weightKg: 195, note: 'Ingreso post-destete' },
+                    { id: 'w8', date: '2026-07-20', weightKg: 248, note: 'Engorde en potrero #2' }
+                ],
+                health: [
+                    { id: 'h6', type: 'Desparasitante', product: 'Albendazol Oral', date: '2026-02-22', nextDate: '', dose: '20 ml Oral', notes: 'Desparasitación de entrada' }
+                ]
+            },
+            {
+                id: 'bov-104',
+                name: 'Toro Negro (Vendido)',
+                hasEarTag: true,
+                earTag: 'HN-091',
+                genetics: 'Cruce',
+                breed: 'Brahman x Angus',
+                category: 'Novillo',
+                entryDate: '2025-10-05',
+                status: 'sold',
+                saleInfo: {
+                    date: '2026-09-12',
+                    weightKg: 490,
+                    buyer: 'Ganadera del Norte',
+                    note: 'Venta de engorde finalizada con éxito'
+                },
+                notes: 'Excelente conversión alimenticia.',
+                weights: [
+                    { id: 'w20', date: '2025-10-05', weightKg: 280, note: 'Peso de compra' },
+                    { id: 'w21', date: '2026-09-12', weightKg: 490, note: 'Peso final de venta' }
+                ],
+                health: [
+                    { id: 'h20', type: 'Vitamina', product: 'Complejo B + ADE', date: '2026-04-10', nextDate: '', dose: '10 ml IM', notes: 'Refuerzo engorde' }
+                ]
+            }
+        ];
+
+        // Cargar estado local inicial
+        function loadLocalState() {
+            try {
+                const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    window.appState = { ...window.appState, ...parsed };
+                } else {
+                    window.appState.animals = JSON.parse(JSON.stringify(DEMO_ANIMALS));
+                    saveLocalState();
+                }
+            } catch (e) {
+                window.appState.animals = JSON.parse(JSON.stringify(DEMO_ANIMALS));
+            }
+        }
+
+        function saveLocalState() {
+            try {
+                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(window.appState));
+            } catch (e) {}
+        }
+
+        // Guardar cambios (Local + Nube si está conectado)
+        async function persistState() {
+            saveLocalState();
+            if (firebaseEnabled && currentUser && !currentUser.isAnonymous && db) {
+                try {
+                    const herdRef = doc(db, 'artifacts', appId, 'public', 'data', 'herds', window.appState.herdCode);
+                    await setDoc(herdRef, {
+                        ...window.appState,
+                        updatedAt: new Date().toISOString(),
+                        updatedBy: currentUser.email || currentUser.uid
+                    }, { merge: true });
+                    document.getElementById('footer-sync-status').textContent = 'Sincronizado en la nube en tiempo real';
+                } catch (err) {
+                    console.error("Error sincronizando con la nube:", err);
+                }
+            }
+        }
+
+        // Suscribirse en tiempo real al hato compartido en Firestore
+        function subscribeToHerd(herdCode) {
+            if (!firebaseEnabled || !db || !herdCode) return;
+            if (unsubscribeHerd) unsubscribeHerd();
+
+            const herdRef = doc(db, 'artifacts', appId, 'public', 'data', 'herds', herdCode);
+            unsubscribeHerd = onSnapshot(herdRef, (snap) => {
+                if (snap.exists()) {
+                    const cloudData = snap.data();
+                    window.appState = {
+                        ...window.appState,
+                        ...cloudData,
+                        herdCode
+                    };
+                    saveLocalState();
+                    updateUI();
+                    if (selectedAnimalId) renderAnimalDetail(selectedAnimalId);
+                } else {
+                    // Si el hato aún no existe en la nube, subir los datos actuales
+                    persistState();
+                }
+            }, (err) => {
+                console.error("Error escuchando cambios del hato:", err);
+            });
+        }
+
+        // Verificar y registrar dispositivo (MÁXIMO 2 DISPOSITIVOS POR USUARIO)
+        async function verifyAndRegisterDevice(user, customHerdCode = null, displayName = null) {
+            if (!firebaseEnabled || !db || !user || user.isAnonymous) return true;
+
+            const userRef = doc(db, 'artifacts', appId, 'users', user.uid, 'profile', 'info');
+            const snap = await getDoc(userRef);
+
+            let profile = snap.exists() ? snap.data() : {
+                email: user.email,
+                name: displayName || user.email.split('@')[0],
+                herdCode: customHerdCode || window.appState.herdCode,
+                devices: []
+            };
+
+            if (customHerdCode) {
+                profile.herdCode = customHerdCode.toUpperCase().trim();
+            }
+
+            let devices = Array.isArray(profile.devices) ? profile.devices : [];
+            const existingIndex = devices.findIndex(d => d.id === currentDeviceId);
+
+            if (existingIndex !== -1) {
+                // Este dispositivo ya está autorizado: actualizar última conexión
+                devices[existingIndex].lastActive = new Date().toISOString();
+            } else {
+                // Nuevo dispositivo intentando entrar
+                if (devices.length >= 2) {
+                    // BLOQUEAR ACCESO POR EXCEDER EL LÍMITE DE 2 DISPOSITIVOS
+                    pendingBlockedUser = { user, profile, userRef };
+                    showDeviceLimitReached(devices);
+                    return false;
+                }
+                devices.push({
+                    id: currentDeviceId,
+                    name: getDeviceFriendlyName(),
+                    lastActive: new Date().toISOString()
+                });
+            }
+
+            profile.devices = devices;
+            await setDoc(userRef, profile, { merge: true });
+
+            window.appState.herdCode = profile.herdCode;
+            saveLocalState();
+            subscribeToHerd(profile.herdCode);
+            updateAuthUI(user, profile);
+            return true;
+        }
+
+        function showDeviceLimitReached(devices) {
+            document.getElementById('auth-form').classList.add('hidden');
+            document.getElementById('auth-logged-in-view').classList.add('hidden');
+            document.getElementById('auth-device-limit-view').classList.remove('hidden');
+
+            const list = document.getElementById('limit-devices-list');
+            list.innerHTML = devices.map(d => `
+                <div class="bg-gray-50 border border-gray-200 rounded-xl p-3 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-charcoal"><i class="fa-solid fa-mobile-screen mr-1 text-emeraldDeep-700"></i> ${escapeHTML(d.name)}</p>
+                        <p class="text-[11px] text-gray-500 font-mono">ID: ${d.id}</p>
+                    </div>
+                    <button onclick="unlinkDeviceAndAuthorize('${d.id}')" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg">
+                        Reemplazar este
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        window.unlinkDeviceAndAuthorize = async function(deviceIdToRemove) {
+            if (!pendingBlockedUser) return;
+            const { user, profile, userRef } = pendingBlockedUser;
+            profile.devices = profile.devices.filter(d => d.id !== deviceIdToRemove);
+            profile.devices.push({
+                id: currentDeviceId,
+                name: getDeviceFriendlyName(),
+                lastActive: new Date().toISOString()
+            });
+            await setDoc(userRef, profile, { merge: true });
+            pendingBlockedUser = null;
+
+            window.appState.herdCode = profile.herdCode;
+            saveLocalState();
+            subscribeToHerd(profile.herdCode);
+            updateAuthUI(user, profile);
+            closeAuthModal();
+            enterAppDirectly();
+            showToast('Dispositivo autorizado y sincronizado');
+        };
+
+        window.cancelBlockedLogin = async function() {
+            pendingBlockedUser = null;
+            if (auth) await signOut(auth);
+            closeAuthModal();
+        };
+
+        function updateAuthUI(user, profile = null) {
+            const pillText = document.getElementById('user-pill-text');
+            if (user && !user.isAnonymous) {
+                pillText.textContent = user.email.split('@')[0];
+                document.getElementById('auth-user-email').textContent = user.email;
+                document.getElementById('auth-user-herd').textContent = window.appState.herdCode;
+                if (profile && profile.devices) {
+                    document.getElementById('auth-device-count').textContent = `${profile.devices.length} / 2`;
+                    document.getElementById('auth-devices-list').innerHTML = profile.devices.map(d => `
+                        <div class="bg-creamWarm border border-goldWarm-300 rounded-xl p-2.5 flex items-center justify-between text-xs">
+                            <div>
+                                <span class="font-bold text-charcoal block">${escapeHTML(d.name)} ${d.id === currentDeviceId ? '<span class="text-emerald-700">(Este equipo)</span>' : ''}</span>
+                                <span class="text-[10px] font-mono text-gray-500">${d.id}</span>
+                            </div>
+                            ${d.id !== currentDeviceId ? `
+                                <button onclick="removeOtherDevice('${d.id}')" class="text-rose-600 hover:underline font-bold">Desvincular</button>
+                            ` : '<i class="fa-solid fa-circle-check text-emerald-600"></i>'}
+                        </div>
+                    `).join('');
+                }
+            } else {
+                pillText.textContent = 'Modo Local';
+            }
+        }
+
+        window.removeOtherDevice = async function(devId) {
+            if (!currentUser || !db) return;
+            const userRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'profile', 'info');
+            const snap = await getDoc(userRef);
+            if (snap.exists()) {
+                const profile = snap.data();
+                profile.devices = (profile.devices || []).filter(d => d.id !== devId);
+                await setDoc(userRef, profile, { merge: true });
+                updateAuthUI(currentUser, profile);
+                showToast('Dispositivo desvinculado');
+            }
+        };
+
+        window.handleAuthSubmit = async function(e) {
+            e.preventDefault();
+            if (!firebaseEnabled || !auth) {
+                showToast('Servicio en la nube no disponible en este entorno', 'error');
+                return;
+            }
+            const email = document.getElementById('auth-input-email').value.trim();
+            const pass = document.getElementById('auth-input-pass').value;
+            const name = document.getElementById('auth-input-name').value.trim();
+            const customHerd = document.getElementById('auth-input-herd').value.trim();
+
+            try {
+                let cred;
+                if (authMode === 'register') {
+                    cred = await createUserWithEmailAndPassword(auth, email, pass);
+                    const allowed = await verifyAndRegisterDevice(cred.user, customHerd || null, name);
+                    if (allowed) {
+                        closeAuthModal();
+                        enterAppDirectly();
+                        showToast('¡Cuenta creada y sincronizada!');
+                    }
+                } else {
+                    cred = await signInWithEmailAndPassword(auth, email, pass);
+                    const allowed = await verifyAndRegisterDevice(cred.user);
+                    if (allowed) {
+                        closeAuthModal();
+                        enterAppDirectly();
+                        showToast('¡Bienvenido de vuelta a Mi Haciendita!');
+                    }
+                }
+            } catch (err) {
+                let msg = 'Error de autenticación';
+                if (err.code === 'auth/email-already-in-use') msg = 'Este correo ya está registrado. Inicia sesión.';
+                else if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password') msg = 'Correo o contraseña incorrectos.';
+                else if (err.code === 'auth/weak-password') msg = 'La contraseña debe tener al menos 6 caracteres.';
+                showToast(msg, 'error');
+            }
+        };
+
+        window.logoutUser = async function() {
+            if (auth) await signOut(auth);
+            currentUser = null;
+            if (unsubscribeHerd) unsubscribeHerd();
+            updateAuthUI(null);
+            closeAuthModal();
+            showToast('Sesión cerrada');
+        };
+
+        window.joinHerdByCode = async function() {
+            const code = document.getElementById('input-join-herd-code').value.trim().toUpperCase();
+            if (!code) {
+                showToast('Ingresa un código de hato válido', 'error');
+                return;
+            }
+            window.appState.herdCode = code;
+            saveLocalState();
+            document.getElementById('display-herd-code').value = code;
+
+            if (firebaseEnabled && currentUser && !currentUser.isAnonymous && db) {
+                const userRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'profile', 'info');
+                await setDoc(userRef, { herdCode: code }, { merge: true });
+                subscribeToHerd(code);
+                showToast(`Vinculado al hato ${code} en tiempo real`);
+            } else {
+                showToast(`Código ${code} guardado. Inicia sesión para sincronizar en la nube.`);
+            }
+        };
+
+        // Inicialización al cargar
+        window.addEventListener('DOMContentLoaded', async () => {
+            loadLocalState();
+            updateUI();
+
+            if (firebaseEnabled && auth) {
+                onAuthStateChanged(auth, async (user) => {
+                    currentUser = user;
+                    if (user && !user.isAnonymous) {
+                        await verifyAndRegisterDevice(user);
+                    } else {
+                        updateAuthUI(null);
+                    }
+                });
+
+                try {
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    }
+                } catch (e) {}
+            }
+        });
+
+        // Exponer funciones al ámbito global para los eventos HTML
+        window.persistState = persistState;
+        window.selectedAnimalIdRef = () => selectedAnimalId;
+        window.setSelectedAnimalId = (id) => { selectedAnimalId = id; };
+        window.getWeightChartInstance = () => weightChartInstance;
+        window.setWeightChartInstance = (inst) => { weightChartInstance = inst; };
+        window.getAuthMode = () => authMode;
+        window.setAuthMode = (m) => { authMode = m; };
+        window.getCurrentUser = () => currentUser;
+    </script>
+
+    <!-- Script de Interfaz y Operaciones del Hato -->
+    <script>
+        const KG_TO_LBS = 2.20462;
+
+        // Navegación Pantalla Bienvenida <-> App Principal
+        function enterAppDirectly() {
+            document.getElementById('welcome-screen').classList.add('hidden');
+            const shell = document.getElementById('main-app-shell');
+            shell.classList.remove('hidden');
+            shell.classList.add('flex');
+            updateUI();
+        }
+
+        function showWelcomeScreen() {
+            document.getElementById('main-app-shell').classList.add('hidden');
+            document.getElementById('main-app-shell').classList.remove('flex');
+            document.getElementById('welcome-screen').classList.remove('hidden');
+        }
+
+        // Control Modal de Autenticación
+        function openAuthModal(mode = 'login') {
+            const user = window.getCurrentUser ? window.getCurrentUser() : null;
+            document.getElementById('auth-device-limit-view').classList.add('hidden');
+
+            if (user && !user.isAnonymous) {
+                document.getElementById('auth-form').classList.add('hidden');
+                document.getElementById('auth-logged-in-view').classList.remove('hidden');
+            } else {
+                document.getElementById('auth-logged-in-view').classList.add('hidden');
+                document.getElementById('auth-form').classList.remove('hidden');
+                switchAuthMode(mode === 'register' ? 'register' : 'login');
+            }
+            document.getElementById('modal-auth').classList.remove('hidden');
+        }
+
+        function closeAuthModal() {
+            document.getElementById('modal-auth').classList.add('hidden');
+        }
+
+        function switchAuthMode(mode) {
+            if (window.setAuthMode) window.setAuthMode(mode);
+            const isReg = mode === 'register';
+            document.getElementById('tab-auth-login').className = !isReg
+                ? 'flex-1 py-2 rounded-lg text-xs font-bold bg-emeraldDeep-800 text-white shadow'
+                : 'flex-1 py-2 rounded-lg text-xs font-bold text-gray-600';
+            document.getElementById('tab-auth-register').className = isReg
+                ? 'flex-1 py-2 rounded-lg text-xs font-bold bg-emeraldDeep-800 text-white shadow'
+                : 'flex-1 py-2 rounded-lg text-xs font-bold text-gray-600';
+
+            document.getElementById('auth-name-field').classList.toggle('hidden', !isReg);
+            document.getElementById('auth-herd-code-field').classList.toggle('hidden', !isReg);
+            document.getElementById('auth-submit-btn').textContent = isReg ? 'Crear Cuenta y Vincular' : 'Entrar y Sincronizar';
+        }
+
+        // Utilidades de Peso y Fechas
+        function formatWeight(weightKg, includeUnit = true) {
+            const unit = window.appState.globalUnit || 'kg';
+            const val = unit === 'kg' ? weightKg : weightKg * KG_TO_LBS;
+            const rounded = Math.round(val * 10) / 10;
+            return includeUnit ? `${rounded} ${unit}` : rounded;
+        }
+
+        function toKg(val, unit) {
+            return unit === 'kg' ? parseFloat(val) : parseFloat(val) / KG_TO_LBS;
+        }
+
+        function formatDateES(dateStr) {
+            if (!dateStr) return '—';
+            const [y, m, d] = dateStr.split('-');
+            const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+            return `${parseInt(d)} ${months[parseInt(m) - 1]} ${y}`;
+        }
+
+        function daysBetween(date1Str, date2Str) {
+            const d1 = new Date(date1Str + 'T00:00:00');
+            const d2 = new Date(date2Str + 'T00:00:00');
+            return Math.max(0, Math.round((d2 - d1) / (1000 * 60 * 60 * 24)));
+        }
+
+        function getTodayStr() {
+            return new Date().toISOString().split('T')[0];
+        }
+
+        function getSortedWeights(animal) {
+            return [...(animal.weights || [])].sort((a, b) => a.date.localeCompare(b.date));
+        }
+
+        function getCategoryEmoji(cat) {
+            const map = { 'Vaca': '🐄', 'Toro': '🐂', 'Novillo': '🐃', 'Vaquilla': '🐄', 'Ternero': '🐮', 'Ternera': '🐮' };
+            return map[cat] || '🐄';
+        }
+
+        // Actualización Global de UI
+        function updateUI() {
+            const state = window.appState;
+            const unit = state.globalUnit || 'kg';
+
+            // Identidad de la Finca
+            document.getElementById('header-ranch-subtitle').innerHTML = `Hato: <strong class="text-goldWarm-300">${escapeHTML(state.ranchName)}</strong> • Prop.: <span>${escapeHTML(state.ownerName)}</span>`;
+            document.getElementById('dash-ranch-name').textContent = state.ranchName;
+            document.getElementById('dash-owner-name').textContent = state.ownerName;
+            document.getElementById('dash-ranch-location').textContent = state.location || 'Finca Familiar';
+
+            // Formulario de configuración
+            document.getElementById('cfg-ranch-name').value = state.ranchName;
+            document.getElementById('cfg-owner-name').value = state.ownerName;
+            document.getElementById('cfg-location').value = state.location || '';
+            document.getElementById('cfg-unit').value = unit;
+            document.getElementById('display-herd-code').value = state.herdCode;
+
+            document.querySelectorAll('.unit-label').forEach(el => el.textContent = unit);
+
+            updateStats();
+            renderHato();
+            renderSoldHato();
+            renderGlobalLog();
+            renderDashboardRecent();
+        }
+
+        function updateStats() {
+            const all = window.appState.animals || [];
+            const activeAnimals = all.filter(a => a.status !== 'sold');
+            const soldAnimals = all.filter(a => a.status === 'sold');
+            const unit = window.appState.globalUnit || 'kg';
+
+            document.getElementById('stat-total').textContent = activeAnimals.length;
+            document.getElementById('stat-sold').textContent = soldAnimals.length;
+            document.getElementById('badge-sold-count').textContent = soldAnimals.length;
+
+            let puros = 0, criollos = 0, cruces = 0;
+            let earYes = 0, earNo = 0;
+            let sumWeightsKg = 0;
+            let upcomingAlerts = 0;
+
+            const in30Days = new Date();
+            in30Days.setDate(in30Days.getDate() + 30);
+
+            activeAnimals.forEach(a => {
+                if (a.genetics === 'Pura') puros++;
+                else if (a.genetics === 'Criollo') criollos++;
+                else cruces++;
+
+                if (a.hasEarTag) earYes++;
+                else earNo++;
+
+                const sortedW = getSortedWeights(a);
+                if (sortedW.length > 0) sumWeightsKg += sortedW[sortedW.length - 1].weightKg;
+
+                (a.health || []).forEach(h => {
+                    if (h.nextDate && new Date(h.nextDate + 'T00:00:00') <= in30Days) {
+                        upcomingAlerts++;
+                    }
+                });
+            });
+
+            document.getElementById('stat-genetics').textContent = `${puros} Puros • ${criollos} Criollos • ${cruces} Cruces`;
+            document.getElementById('stat-ear-yes').textContent = earYes;
+            document.getElementById('stat-ear-no').textContent = `${earNo} sin arete`;
+
+            const avgKg = activeAnimals.length > 0 ? sumWeightsKg / activeAnimals.length : 0;
+            document.getElementById('stat-avg-weight').innerHTML = `${formatWeight(avgKg, false)} <span class="text-sm font-semibold text-gray-400">${unit}</span>`;
+            document.getElementById('stat-total-weight').textContent = `Total: ${formatWeight(sumWeightsKg)}`;
+            document.getElementById('stat-alerts').textContent = upcomingAlerts;
+        }
+
+        // Renderizar Hato Activo
+        function renderHato() {
+            const grid = document.getElementById('animals-grid');
+            const empty = document.getElementById('empty-state');
+            const search = document.getElementById('search-input').value.toLowerCase().trim();
+            const filter = document.getElementById('filter-select').value;
+
+            const activeList = (window.appState.animals || []).filter(a => a.status !== 'sold');
+            const filtered = activeList.filter(a => {
+                const matchesSearch = a.name.toLowerCase().includes(search) ||
+                                      (a.earTag && a.earTag.toLowerCase().includes(search)) ||
+                                      a.breed.toLowerCase().includes(search) ||
+                                      a.category.toLowerCase().includes(search);
+                if (!matchesSearch) return false;
+                if (filter === 'all') return true;
+                if (filter === 'ear-yes') return a.hasEarTag;
+                if (filter === 'ear-no') return !a.hasEarTag;
+                return a.genetics === filter;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                empty.classList.remove('hidden');
+                return;
+            }
+
+            empty.classList.add('hidden');
+            grid.innerHTML = filtered.map(animal => buildAnimalCardHTML(animal, false)).join('');
+        }
+
+        // Renderizar Ganado Vendido
+        function renderSoldHato() {
+            const grid = document.getElementById('sold-animals-grid');
+            const empty = document.getElementById('empty-sold-state');
+            const soldList = (window.appState.animals || []).filter(a => a.status === 'sold');
+
+            if (soldList.length === 0) {
+                grid.innerHTML = '';
+                empty.classList.remove('hidden');
+                return;
+            }
+            empty.classList.add('hidden');
+            grid.innerHTML = soldList.map(animal => buildAnimalCardHTML(animal, true)).join('');
+        }
+
+        // Construir Tarjeta de Animal (Activo o Vendido)
+        function buildAnimalCardHTML(animal, isSold) {
+            const sortedW = getSortedWeights(animal);
+            const initialW = sortedW.length > 0 ? sortedW[0].weightKg : 0;
+            const currentW = sortedW.length > 0 ? sortedW[sortedW.length - 1].weightKg : 0;
+            const diffKg = currentW - initialW;
+            const lastWeighDate = sortedW.length > 0 ? sortedW[sortedW.length - 1].date : animal.entryDate;
+
+            let genBadgeClass = 'bg-emerald-50 text-emerald-800 border-emerald-200';
+            if (animal.genetics === 'Pura') genBadgeClass = 'bg-amber-50 text-amber-800 border-amber-300';
+            if (animal.genetics === 'Cruce') genBadgeClass = 'bg-sky-50 text-sky-800 border-sky-200';
+
+            let diffHtml = `<span class="text-xs text-gray-400">Inicial</span>`;
+            if (sortedW.length > 1) {
+                const diffFormatted = formatWeight(Math.abs(diffKg));
+                diffHtml = diffKg >= 0
+                    ? `<span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">+${diffFormatted}</span>`
+                    : `<span class="text-xs font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-md">-${diffFormatted}</span>`;
+            }
+
+            const borderClass = isSold ? 'border-amber-400 bg-amber-50/30' : 'border-goldWarm-300/50 bg-white hover:border-emeraldDeep-600';
+
+            return `
+            <div onclick="openDetailModal('${animal.id}')" class="rounded-2xl p-5 card-shadow border-2 ${borderClass} transition-all cursor-pointer group flex flex-col justify-between">
+                <div>
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-2xl bg-creamWarm border border-goldWarm-300 flex items-center justify-center text-2xl group-hover:scale-105 transition">
+                                ${getCategoryEmoji(animal.category)}
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-1.5">
+                                    <h3 class="font-display font-bold text-lg text-charcoal group-hover:text-emeraldDeep-700 transition leading-tight">
+                                        ${escapeHTML(animal.name)}
+                                    </h3>
+                                </div>
+                                <p class="text-xs text-gray-500 font-medium mt-0.5">
+                                    ${escapeHTML(animal.category)} • <strong>${escapeHTML(animal.breed)}</strong>
+                                </p>
+                            </div>
+                        </div>
+
+                        ${isSold 
+                            ? `<span class="px-2.5 py-1 rounded-lg bg-rose-600 text-white text-xs font-extrabold uppercase tracking-wider shadow-sm">VENDIDO</span>`
+                            : (animal.hasEarTag 
+                                ? `<span class="px-2.5 py-1 rounded-lg bg-emeraldDeep-50 text-emeraldDeep-900 border border-emeraldDeep-600/20 font-mono text-xs font-bold flex items-center gap-1">
+                                     <i class="fa-solid fa-tag text-goldWarm-600"></i> ${escapeHTML(animal.earTag)}
+                                   </span>`
+                                : `<span class="px-2.5 py-1 rounded-lg bg-amber-100 text-amber-800 text-xs font-bold">Sin Arete</span>`)
+                        }
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2 mt-3.5">
+                        <span class="px-2.5 py-0.5 rounded-md border text-xs font-semibold ${genBadgeClass}">
+                            ${animal.genetics === 'Pura' ? '🏅 Raza Pura' : animal.genetics === 'Criollo' ? '🌿 Criollo' : '🧬 Cruce'}
+                        </span>
+                        <span class="text-xs text-gray-500 bg-creamWarm px-2.5 py-0.5 rounded-md border border-gray-200">
+                            Entrada: ${formatDateES(animal.entryDate)}
+                        </span>
+                    </div>
+
+                    <div class="mt-4 bg-creamWarm rounded-xl p-3 border border-goldWarm-300/40 grid grid-cols-2 gap-2">
+                        <div>
+                            <span class="text-[11px] uppercase text-gray-400 font-semibold block">Peso Entrada</span>
+                            <span class="text-sm font-bold text-gray-700">${formatWeight(initialW)}</span>
+                        </div>
+                        <div class="border-l border-gray-200 pl-3">
+                            <span class="text-[11px] uppercase text-gray-400 font-semibold block">${isSold ? 'Peso Venta' : 'Último Peso'} (${formatDateES(lastWeighDate)})</span>
+                            <div class="flex items-center justify-between gap-1 mt-0.5">
+                                <span class="text-base font-display font-extrabold text-emeraldDeep-900">${formatWeight(currentW)}</span>
+                                ${diffHtml}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs">
+                    ${isSold && animal.saleInfo
+                        ? `<span class="text-amber-800 font-semibold truncate max-w-[72%]">
+                             <i class="fa-solid fa-handshake mr-1"></i> Vendido: ${formatDateES(animal.saleInfo.date)} ${animal.saleInfo.buyer ? '(' + escapeHTML(animal.saleInfo.buyer) + ')' : ''}
+                           </span>`
+                        : `<span class="text-gray-500">
+                             <i class="fa-solid fa-syringe text-emeraldDeep-700 mr-1"></i> ${(animal.health || []).length} registros sanitarios
+                           </span>`
+                    }
+                    <span class="text-emeraldDeep-800 font-bold group-hover:translate-x-1 transition-transform">
+                        Ficha <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </span>
+                </div>
+            </div>
+            `;
+        }
+
+        // Navegación entre Pestañas Principales
+        function switchMainTab(tab) {
+            const tabs = ['inicio', 'hato', 'vendidos', 'bitacora', 'finca'];
+            tabs.forEach(t => {
+                document.getElementById('view-' + t).classList.toggle('hidden', t !== tab);
+                const btn = document.getElementById('nav-' + t);
+                if (t === tab) {
+                    btn.className = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-goldWarm-400 text-emeraldDeep-950 shadow transition';
+                } else {
+                    btn.className = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-emerald-100 hover:text-white transition';
+                }
+            });
+            if (tab === 'bitacora') renderGlobalLog();
+            if (tab === 'inicio') renderDashboardRecent();
+        }
+
+        // Guardar Configuración de Finca
+        function saveRanchSettings(e) {
+            e.preventDefault();
+            window.appState.ranchName = document.getElementById('cfg-ranch-name').value.trim();
+            window.appState.ownerName = document.getElementById('cfg-owner-name').value.trim();
+            window.appState.location = document.getElementById('cfg-location').value.trim();
+            window.appState.globalUnit = document.getElementById('cfg-unit').value;
+            window.persistState();
+            updateUI();
+            showToast('Datos de Mi Haciendita guardados');
+        }
+
+        function copyHerdCode() {
+            const input = document.getElementById('display-herd-code');
+            input.select();
+            document.execCommand('copy');
+            showToast('Código del hato copiado al portapapeles');
+        }
+
+        // Construir Eventos Cronológicos
+        function collectAllEvents() {
+            let events = [];
+            (window.appState.animals || []).forEach(a => {
+                (a.weights || []).forEach(w => {
+                    events.push({
+                        date: w.date,
+                        category: 'pesaje',
+                        animalId: a.id,
+                        animalName: a.name,
+                        earTag: a.hasEarTag ? a.earTag : 'Sin arete',
+                        title: `Pesaje: ${formatWeight(w.weightKg)}`,
+                        detail: w.note || 'Control de peso'
+                    });
+                });
+                (a.health || []).forEach(h => {
+                    events.push({
+                        date: h.date,
+                        category: h.type,
+                        animalId: a.id,
+                        animalName: a.name,
+                        earTag: a.hasEarTag ? a.earTag : 'Sin arete',
+                        title: `${h.type}: ${h.product}`,
+                        detail: `${h.dose ? 'Dosis: ' + h.dose + ' • ' : ''}${h.notes || ''}`
+                    });
+                });
+                if (a.status === 'sold' && a.saleInfo) {
+                    events.push({
+                        date: a.saleInfo.date,
+                        category: 'venta',
+                        animalId: a.id,
+                        animalName: a.name,
+                        earTag: a.hasEarTag ? a.earTag : 'Sin arete',
+                        title: `Animal Vendido (${formatWeight(a.saleInfo.weightKg)})`,
+                        detail: `${a.saleInfo.buyer ? 'Comprador: ' + a.saleInfo.buyer + ' • ' : ''}${a.saleInfo.note || ''}`
+                    });
+                }
+            });
+            return events.sort((a, b) => b.date.localeCompare(a.date));
+        }
+
+        function renderDashboardRecent() {
+            const container = document.getElementById('dashboard-recent-list');
+            const recent = collectAllEvents().slice(0, 5);
+            if (recent.length === 0) {
+                container.innerHTML = `<p class="py-6 text-center text-xs text-gray-400">Sin movimientos recientes.</p>`;
+                return;
+            }
+            container.innerHTML = recent.map(ev => buildEventRowHTML(ev)).join('');
+        }
+
+        function renderGlobalLog() {
+            const list = document.getElementById('global-log-list');
+            const filter = document.getElementById('log-filter').value;
+            let events = collectAllEvents();
+            if (filter !== 'all') events = events.filter(e => e.category === filter);
+
+            if (events.length === 0) {
+                list.innerHTML = `<p class="py-8 text-center text-sm text-gray-500">No hay registros en esta categoría.</p>`;
+                return;
+            }
+            list.innerHTML = events.map(ev => buildEventRowHTML(ev)).join('');
+        }
+
+        function buildEventRowHTML(ev) {
+            let badge = `<span class="w-9 h-9 rounded-xl bg-goldWarm-100 text-goldWarm-700 flex items-center justify-center"><i class="fa-solid fa-weight-scale"></i></span>`;
+            if (ev.category === 'Vacuna') badge = `<span class="w-9 h-9 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center"><i class="fa-solid fa-syringe"></i></span>`;
+            else if (ev.category === 'Vitamina') badge = `<span class="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center"><i class="fa-solid fa-pills"></i></span>`;
+            else if (ev.category === 'Desparasitante') badge = `<span class="w-9 h-9 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center"><i class="fa-solid fa-shield-virus"></i></span>`;
+            else if (ev.category === 'venta') badge = `<span class="w-9 h-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center"><i class="fa-solid fa-handshake"></i></span>`;
+
+            return `
+            <div onclick="openDetailModal('${ev.animalId}')" class="py-3 px-2 hover:bg-creamWarm rounded-xl transition cursor-pointer flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    ${badge}
+                    <div>
+                        <p class="text-sm font-bold text-charcoal">${escapeHTML(ev.title)}</p>
+                        <p class="text-xs text-gray-500">
+                            <span class="font-bold text-emeraldDeep-800">${escapeHTML(ev.animalName)}</span> (${escapeHTML(ev.earTag)})
+                            ${ev.detail ? ` • ${escapeHTML(ev.detail)}` : ''}
+                        </p>
+                    </div>
+                </div>
+                <span class="text-xs font-semibold text-gray-600 bg-gray-100 px-2.5 py-1 rounded-lg whitespace-nowrap">
+                    ${formatDateES(ev.date)}
+                </span>
+            </div>
+            `;
+        }
+
+        // =====================================================================
+        // MODAL NUEVO / EDITAR ANIMAL
+        // =====================================================================
+        function openNewAnimalModal(animalToEdit = null) {
+            const modal = document.getElementById('modal-new-animal');
+            document.getElementById('animal-form').reset();
+
+            if (animalToEdit) {
+                document.getElementById('form-animal-title').textContent = 'Editar Datos del Bovino';
+                document.getElementById('edit-animal-id').value = animalToEdit.id;
+                document.getElementById('input-name').value = animalToEdit.name;
+                document.getElementById('input-category').value = animalToEdit.category;
+                document.querySelector(`input[name="hasEarTag"][value="${animalToEdit.hasEarTag ? 'yes' : 'no'}"]`).checked = true;
+                document.getElementById('input-eartag').value = animalToEdit.earTag || '';
+                document.getElementById('input-genetics').value = animalToEdit.genetics;
+                document.getElementById('input-breed').value = animalToEdit.breed;
+                document.getElementById('input-entry-date').value = animalToEdit.entryDate;
+                document.getElementById('input-notes').value = animalToEdit.notes || '';
+                document.getElementById('initial-weight-section').classList.add('hidden');
+                document.getElementById('input-initial-weight').required = false;
+            } else {
+                document.getElementById('form-animal-title').textContent = 'Registrar Nuevo Bovino';
+                document.getElementById('edit-animal-id').value = '';
+                document.getElementById('input-entry-date').value = getTodayStr();
+                document.getElementById('input-weight-unit').value = window.appState.globalUnit || 'kg';
+                document.getElementById('initial-weight-section').classList.remove('hidden');
+                document.getElementById('input-initial-weight').required = true;
+            }
+            toggleEarTagInput();
+            modal.classList.remove('hidden');
+        }
+
+        function closeNewAnimalModal() {
+            document.getElementById('modal-new-animal').classList.add('hidden');
+        }
+
+        function toggleEarTagInput() {
+            const hasTag = document.querySelector('input[name="hasEarTag"]:checked').value === 'yes';
+            document.getElementById('ear-tag-number-container').classList.toggle('hidden', !hasTag);
+            document.getElementById('input-eartag').required = hasTag;
+        }
+
+        function saveAnimal(e) {
+            e.preventDefault();
+            const editId = document.getElementById('edit-animal-id').value;
+            const name = document.getElementById('input-name').value.trim();
+            const category = document.getElementById('input-category').value;
+            const hasEarTag = document.querySelector('input[name="hasEarTag"]:checked').value === 'yes';
+            const earTag = hasEarTag ? document.getElementById('input-eartag').value.trim() : '';
+            const genetics = document.getElementById('input-genetics').value;
+            const breed = document.getElementById('input-breed').value.trim();
+            const entryDate = document.getElementById('input-entry-date').value;
+            const notes = document.getElementById('input-notes').value.trim();
+
+            if (editId) {
+                const idx = window.appState.animals.findIndex(a => a.id === editId);
+                if (idx !== -1) {
+                    window.appState.animals[idx] = {
+                        ...window.appState.animals[idx],
+                        name, category, hasEarTag, earTag, genetics, breed, entryDate, notes
+                    };
+                    showToast('Datos actualizados');
+                    if (window.selectedAnimalIdRef() === editId) renderAnimalDetail(editId);
+                }
+            } else {
+                const initVal = document.getElementById('input-initial-weight').value;
+                const initUnit = document.getElementById('input-weight-unit').value;
+                const weightKg = Math.round(toKg(initVal, initUnit) * 100) / 100;
+
+                window.appState.animals.unshift({
+                    id: 'bov-' + Date.now(),
+                    name, hasEarTag, earTag, genetics, breed, category, entryDate, notes,
+                    status: 'active',
+                    saleInfo: null,
+                    weights: [{ id: 'w-' + Date.now(), date: entryDate, weightKg, note: 'Peso de entrada a la finca' }],
+                    health: []
+                });
+                showToast(`¡${name} registrado en Mi Haciendita!`);
+            }
+
+            window.persistState();
+            updateUI();
+            closeNewAnimalModal();
+        }
+
+        // =====================================================================
+        // FICHA INDIVIDUAL, VENTA, PESOS Y SANIDAD
+        // =====================================================================
+        function openDetailModal(animalId) {
+            window.setSelectedAnimalId(animalId);
+            document.getElementById('new-weight-date').value = getTodayStr();
+            document.getElementById('health-date').value = getTodayStr();
+            switchDetailTab('pesaje');
+            renderAnimalDetail(animalId);
+            document.getElementById('modal-detail').classList.remove('hidden');
+        }
+
+        function closeDetailModal() {
+            window.setSelectedAnimalId(null);
+            document.getElementById('modal-detail').classList.add('hidden');
+        }
+
+        function editCurrentAnimal() {
+            const animal = window.appState.animals.find(a => a.id === window.selectedAnimalIdRef());
+            if (animal) openNewAnimalModal(animal);
+        }
+
+        function openSellModal() {
+            const animal = window.appState.animals.find(a => a.id === window.selectedAnimalIdRef());
+            if (!animal) return;
+            const sortedW = getSortedWeights(animal);
+            const lastKg = sortedW.length > 0 ? sortedW[sortedW.length - 1].weightKg : 0;
+
+            document.getElementById('sell-date').value = getTodayStr();
+            document.getElementById('sell-weight').value = formatWeight(lastKg, false);
+            document.getElementById('sell-buyer').value = '';
+            document.getElementById('sell-note').value = '';
+            document.getElementById('modal-sell').classList.remove('hidden');
+        }
+
+        function closeSellModal() {
+            document.getElementById('modal-sell').classList.add('hidden');
+        }
+
+        function confirmSellAnimal(e) {
+            e.preventDefault();
+            const animal = window.appState.animals.find(a => a.id === window.selectedAnimalIdRef());
+            if (!animal) return;
+
+            const sellDate = document.getElementById('sell-date').value;
+            const rawWeight = document.getElementById('sell-weight').value;
+            const buyer = document.getElementById('sell-buyer').value.trim();
+            const note = document.getElementById('sell-note').value.trim();
+            const weightKg = Math.round(toKg(rawWeight, window.appState.globalUnit || 'kg') * 100) / 100;
+
+            animal.status = 'sold';
+            animal.saleInfo = { date: sellDate, weightKg, buyer, note };
+            animal.weights.push({
+                id: 'w-sell-' + Date.now(),
+                date: sellDate,
+                weightKg,
+                note: `Peso final de venta${buyer ? ' (' + buyer + ')' : ''}`
+            });
+
+            window.persistState();
+            updateUI();
+            closeSellModal();
+            renderAnimalDetail(animal.id);
+            showToast(`${animal.name} marcado como vendido`);
+        }
+
+        function reactivateAnimal() {
+            const animal = window.appState.animals.find(a => a.id === window.selectedAnimalIdRef());
+            if (!animal) return;
+            animal.status = 'active';
+            animal.saleInfo = null;
+            window.persistState();
+            updateUI();
+            renderAnimalDetail(animal.id);
+            showToast(`${animal.name} devuelto al hato activo`);
+        }
+
+        function switchDetailTab(tab) {
+            const isPesaje = tab === 'pesaje';
+            document.getElementById('detail-sec-pesaje').classList.toggle('hidden', !isPesaje);
+            document.getElementById('detail-sec-sanidad').classList.toggle('hidden', isPesaje);
+            document.getElementById('tab-btn-pesaje').className = isPesaje
+                ? 'py-3.5 text-sm font-bold border-b-2 border-emeraldDeep-700 text-emeraldDeep-900 flex items-center gap-2'
+                : 'py-3.5 text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-charcoal flex items-center gap-2';
+            document.getElementById('tab-btn-sanidad').className = !isPesaje
+                ? 'py-3.5 text-sm font-bold border-b-2 border-emeraldDeep-700 text-emeraldDeep-900 flex items-center gap-2'
+                : 'py-3.5 text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-charcoal flex items-center gap-2';
+        }
+
+        function renderAnimalDetail(animalId) {
+            const animal = window.appState.animals.find(a => a.id === animalId);
+            if (!animal) return;
+            const unit = window.appState.globalUnit || 'kg';
+            const isSold = animal.status === 'sold';
+
+            document.getElementById('detail-avatar').textContent = getCategoryEmoji(animal.category);
+            document.getElementById('detail-name').textContent = animal.name;
+            document.getElementById('detail-sold-pill').classList.toggle('hidden', !isSold);
+            document.getElementById('btn-sell-animal').classList.toggle('hidden', isSold);
+            document.getElementById('btn-reactivate-animal').classList.toggle('hidden', !isSold);
+
+            const earBadge = document.getElementById('detail-eartag-badge');
+            if (animal.hasEarTag) {
+                earBadge.textContent = `Arete: ${animal.earTag}`;
+                earBadge.className = 'px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-goldWarm-400 text-emeraldDeep-950';
+            } else {
+                earBadge.textContent = 'Sin Arete';
+                earBadge.className = 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-200 text-amber-900';
+            }
+
+            document.getElementById('detail-genetics-badge').textContent =
+                animal.genetics === 'Pura' ? '🏅 Raza Pura' : animal.genetics === 'Criollo' ? '🌿 Criollo' : '🧬 Cruce';
+
+            const daysInFarm = daysBetween(animal.entryDate, isSold && animal.saleInfo ? animal.saleInfo.date : getTodayStr());
+            document.getElementById('detail-subtitle').textContent = `${animal.breed} • ${animal.category} • Entrada: ${formatDateES(animal.entryDate)} (${daysInFarm} días)`;
+
+            // Banner de Venta
+            const saleBanner = document.getElementById('detail-sale-banner');
+            if (isSold && animal.saleInfo) {
+                saleBanner.classList.remove('hidden');
+                document.getElementById('detail-sale-summary').textContent = `Vendido el ${formatDateES(animal.saleInfo.date)} con ${formatWeight(animal.saleInfo.weightKg)}${animal.saleInfo.buyer ? ' a ' + animal.saleInfo.buyer : ''}`;
+                document.getElementById('detail-sale-note').textContent = animal.saleInfo.note || '';
+            } else {
+                saleBanner.classList.add('hidden');
+            }
+
+            // Notas
+            const notesBox = document.getElementById('detail-notes-box');
+            if (animal.notes) {
+                notesBox.classList.remove('hidden');
+                document.getElementById('detail-notes-text').textContent = animal.notes;
+            } else {
+                notesBox.classList.add('hidden');
+            }
+
+            // Pesos
+            const sortedW = getSortedWeights(animal);
+            const initW = sortedW.length > 0 ? sortedW[0].weightKg : 0;
+            const currW = sortedW.length > 0 ? sortedW[sortedW.length - 1].weightKg : 0;
+            const gainKg = currW - initW;
+
+            document.getElementById('detail-w-initial').textContent = formatWeight(initW);
+            document.getElementById('detail-w-current').textContent = formatWeight(currW);
+
+            const gainEl = document.getElementById('detail-w-gain');
+            gainEl.textContent = `${gainKg >= 0 ? '+' : '-'}${formatWeight(Math.abs(gainKg))}`;
+            gainEl.className = `font-display font-bold text-base sm:text-lg ${gainKg >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+
+            let gdpText = `0 ${unit}/día`;
+            if (sortedW.length > 1) {
+                const spanDays = daysBetween(sortedW[0].date, sortedW[sortedW.length - 1].date);
+                if (spanDays > 0) gdpText = `${formatWeight(gainKg / spanDays, false)} ${unit}/día`;
+            }
+            document.getElementById('detail-w-gdp').textContent = gdpText;
+
+            renderWeightTable(sortedW, animal.entryDate);
+            renderWeightChart(sortedW);
+            renderHealthList(animal);
+        }
+
+        function renderWeightTable(sortedW, entryDate) {
+            const tbody = document.getElementById('weight-history-tbody');
+            const unit = window.appState.globalUnit || 'kg';
+            const rows = sortedW.map((w, idx) => {
+                const prev = idx > 0 ? sortedW[idx - 1] : null;
+                const diffKg = prev ? w.weightKg - prev.weightKg : 0;
+                const days = daysBetween(entryDate, w.date);
+                let diffBadge = `<span class="text-xs text-gray-400">Inicial</span>`;
+                if (prev) {
+                    const fDiff = formatWeight(Math.abs(diffKg));
+                    diffBadge = diffKg >= 0
+                        ? `<span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">+${fDiff}</span>`
+                        : `<span class="text-xs font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded">-${fDiff}</span>`;
+                }
+                return `
+                <tr class="hover:bg-creamWarm/60">
+                    <td class="px-4 py-3 font-semibold whitespace-nowrap">${formatDateES(w.date)}</td>
+                    <td class="px-4 py-3 text-xs text-gray-500">Día ${days}</td>
+                    <td class="px-4 py-3 font-display font-bold text-emeraldDeep-900">${formatWeight(w.weightKg)}</td>
+                    <td class="px-4 py-3">${diffBadge}</td>
+                    <td class="px-4 py-3 text-xs text-gray-600">${escapeHTML(w.note || '—')}</td>
+                    <td class="px-4 py-3 text-right">
+                        ${sortedW.length > 1 ? `<button onclick="deleteWeightRecord('${w.id}')" class="text-gray-400 hover:text-rose-600 p-1"><i class="fa-solid fa-trash-can"></i></button>` : ''}
+                    </td>
+                </tr>`;
+            }).reverse();
+            tbody.innerHTML = rows.join('');
+        }
+
+        function renderWeightChart(sortedW) {
+            const ctx = document.getElementById('weightChart').getContext('2d');
+            const prevChart = window.getWeightChartInstance();
+            if (prevChart) prevChart.destroy();
+
+            const unit = window.appState.globalUnit || 'kg';
+            const chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: sortedW.map(w => formatDateES(w.date)),
+                    datasets: [{
+                        label: `Peso (${unit})`,
+                        data: sortedW.map(w => formatWeight(w.weightKg, false)),
+                        borderColor: '#047857',
+                        backgroundColor: 'rgba(245, 158, 11, 0.25)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#f59e0b',
+                        pointBorderColor: '#064e3b',
+                        pointRadius: 5,
+                        fill: true,
+                        tension: 0.25
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } }
+                }
+            });
+            window.setWeightChartInstance(chart);
+        }
+
+        function addWeightRecord(e) {
+            e.preventDefault();
+            const animal = window.appState.animals.find(a => a.id === window.selectedAnimalIdRef());
+            if (!animal) return;
+            const date = document.getElementById('new-weight-date').value;
+            const rawVal = document.getElementById('new-weight-val').value;
+            const note = document.getElementById('new-weight-note').value.trim();
+            const weightKg = Math.round(toKg(rawVal, window.appState.globalUnit || 'kg') * 100) / 100;
+
+            animal.weights.push({ id: 'w-' + Date.now(), date, weightKg, note });
+            document.getElementById('new-weight-val').value = '';
+            document.getElementById('new-weight-note').value = '';
+            window.persistState();
+            updateUI();
+            renderAnimalDetail(animal.id);
+            showToast('Pesaje registrado');
+        }
+
+        function deleteWeightRecord(weightId) {
+            const animal = window.appState.animals.find(a => a.id === window.selectedAnimalIdRef());
+            if (!animal || animal.weights.length <= 1) return;
+            animal.weights = animal.weights.filter(w => w.id !== weightId);
+            window.persistState();
+            updateUI();
+            renderAnimalDetail(animal.id);
+            showToast('Pesaje eliminado');
+        }
+
+        function addHealthRecord(e) {
+            e.preventDefault();
+            const animal = window.appState.animals.find(a => a.id === window.selectedAnimalIdRef());
+            if (!animal) return;
+            const type = document.getElementById('health-type').value;
+            const product = document.getElementById('health-product').value.trim();
+            const date = document.getElementById('health-date').value;
+            const nextDate = document.getElementById('health-next-date').value;
+            const dose = document.getElementById('health-dose').value.trim();
+            const notes = document.getElementById('health-notes').value.trim();
+
+            if (!animal.health) animal.health = [];
+            animal.health.push({ id: 'h-' + Date.now(), type, product, date, nextDate, dose, notes });
+
+            document.getElementById('health-product').value = '';
+            document.getElementById('health-next-date').value = '';
+            document.getElementById('health-dose').value = '';
+            document.getElementById('health-notes').value = '';
+            window.persistState();
+            updateUI();
+            renderAnimalDetail(animal.id);
+            showToast(`${type} registrada`);
+        }
+
+        function renderHealthList(animal) {
+            const container = document.getElementById('health-history-list');
+            const list = [...(animal.health || [])].sort((a, b) => b.date.localeCompare(a.date));
+            if (list.length === 0) {
+                container.innerHTML = `<div class="bg-white rounded-2xl p-6 text-center border border-dashed text-xs text-gray-400">Sin registros sanitarios aún.</div>`;
+                return;
+            }
+            container.innerHTML = list.map(h => {
+                let badge = 'bg-sky-100 text-sky-800';
+                if (h.type === 'Vitamina') badge = 'bg-amber-100 text-amber-800';
+                else if (h.type === 'Desparasitante') badge = 'bg-purple-100 text-purple-800';
+                return `
+                <div class="bg-white p-4 rounded-xl border border-gray-200 flex items-center justify-between gap-3">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="px-2 py-0.5 rounded text-xs font-bold ${badge}">${h.type}</span>
+                            <span class="font-bold text-sm text-charcoal">${escapeHTML(h.product)}</span>
+                            ${h.dose ? `<span class="text-xs bg-gray-100 px-2 py-0.5 rounded">${escapeHTML(h.dose)}</span>` : ''}
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">
+                            Aplicado: <strong>${formatDateES(h.date)}</strong>
+                            ${h.nextDate ? ` • <span class="text-rose-700 font-bold">Refuerzo: ${formatDateES(h.nextDate)}</span>` : ''}
+                        </p>
+                        ${h.notes ? `<p class="text-xs text-gray-500 italic mt-0.5">${escapeHTML(h.notes)}</p>` : ''}
+                    </div>
+                    <button onclick="deleteHealthRecord('${h.id}')" class="text-gray-400 hover:text-rose-600 p-2"><i class="fa-solid fa-trash-can"></i></button>
+                </div>`;
+            }).join('');
+        }
+
+        function deleteHealthRecord(healthId) {
+            const animal = window.appState.animals.find(a => a.id === window.selectedAnimalIdRef());
+            if (!animal) return;
+            animal.health = animal.health.filter(h => h.id !== healthId);
+            window.persistState();
+            updateUI();
+            renderAnimalDetail(animal.id);
+            showToast('Registro eliminado');
+        }
+
+        function requestDeleteAnimal() {
+            const animal = window.appState.animals.find(a => a.id === window.selectedAnimalIdRef());
+            if (!animal) return;
+            document.getElementById('confirm-title').textContent = `¿Eliminar a "${animal.name}"?`;
+            document.getElementById('confirm-desc').textContent = 'Si el animal fue vendido, te recomendamos usar "Marcar Vendido" para conservar su historial.';
+            document.getElementById('confirm-action-btn').onclick = () => {
+                window.appState.animals = window.appState.animals.filter(a => a.id !== animal.id);
+                window.persistState();
+                updateUI();
+                closeConfirmModal();
+                closeDetailModal();
+                showToast('Registro eliminado');
+            };
+            document.getElementById('modal-confirm').classList.remove('hidden');
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('modal-confirm').classList.add('hidden');
+        }
+
+        // Exportación CSV y Respaldo JSON
+        function exportToCSV(mode = 'all') {
+            const unit = window.appState.globalUnit || 'kg';
+            let list = window.appState.animals || [];
+            if (mode === 'active') list = list.filter(a => a.status !== 'sold');
+            else if (mode === 'sold') list = list.filter(a => a.status === 'sold');
+
+            let csv = '\uFEFF';
+            csv += `Estado,Nombre,Usa Arete,Numero Arete,Genetica,Raza,Categoria,Fecha Entrada,Peso Entrada (${unit}),Ultimo Peso (${unit}),Ganancia (${unit}),Fecha Venta,Comprador\n`;
+
+            list.forEach(a => {
+                const sortedW = getSortedWeights(a);
+                const initW = sortedW.length > 0 ? formatWeight(sortedW[0].weightKg, false) : 0;
+                const currW = sortedW.length > 0 ? formatWeight(sortedW[sortedW.length - 1].weightKg, false) : 0;
+                const gain = Math.round((currW - initW) * 10) / 10;
+                const row = [
+                    a.status === 'sold' ? 'VENDIDO' : 'ACTIVO',
+                    `"${a.name.replace(/"/g, '""')}"`,
+                    a.hasEarTag ? 'Si' : 'No',
+                    `"${a.earTag || 'N/A'}"`,
+                    a.genetics,
+                    `"${a.breed}"`,
+                    a.category,
+                    a.entryDate,
+                    initW, currW, gain,
+                    a.saleInfo ? a.saleInfo.date : '',
+                    a.saleInfo ? `"${a.saleInfo.buyer || ''}"` : ''
+                ];
+                csv += row.join(',') + '\n';
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `Mi_Haciendita_${mode}_${getTodayStr()}.csv`;
+            link.click();
+            URL.revokeObjectURL(url);
+            showToast('Reporte Excel (CSV) descargado');
+        }
+
+        function downloadBackupJSON() {
+            const blob = new Blob([JSON.stringify(window.appState, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `Respaldo_Mi_Haciendita_${getTodayStr()}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+            showToast('Copia de seguridad descargada');
+        }
+
+        function restoreBackupJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (Array.isArray(parsed.animals)) {
+                        window.appState = { ...window.appState, ...parsed };
+                        window.persistState();
+                        updateUI();
+                        showToast('Respaldo restaurado correctamente');
+                    }
+                } catch (err) {
+                    showToast('Archivo de respaldo inválido', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toast-icon');
+            document.getElementById('toast-message').textContent = msg;
+            icon.className = type === 'error'
+                ? 'fa-solid fa-circle-exclamation text-rose-400 text-lg'
+                : 'fa-solid fa-circle-check text-goldWarm-400 text-lg';
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            setTimeout(() => toast.classList.add('translate-y-24', 'opacity-0'), 3200);
+        }
+
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>"']/g, m => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[m]));
+        }
+    </script>
+</body>
+</html>
